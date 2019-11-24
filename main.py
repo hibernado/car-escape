@@ -112,6 +112,16 @@ def on_draw():
         car.draw()
 
 
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    print((x, y, button, modifiers))
+
+
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    print((x, y, dx, dy, buttons, modifiers))
+
+
 # @window.event
 # def on_key_press(symbol, modifiers):
 #     print('A key was pressed')
