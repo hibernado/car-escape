@@ -45,38 +45,50 @@ class Board:
         self.image.draw()
 
 
-class Car:
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
 
-    def __init__(self, space, x, y, o):
+
+class Car:
+    coordinate_count = 4  # Squares have 4 x,y coordinates
+
+    def __init__(self, space, x, y, o, color):
         self.space = space
         self.x = x
         self.y = y
         self.o = o
+        # Todo: investigate glColor3f(1, 0, 0)
+        self.color = color * self.coordinate_count
 
-    @property
-    def coordinates(self):
-        p_a = list(self.space.map_xy(self.x, self.y))
-        p_b = list(self.space.map_xy(self.x, self.y))
-        p_c = list(self.space.map_xy(self.x, self.y))
-        p_d = list(self.space.map_xy(self.x, self.y))
+    def _coordinates(self, x, y):
+        p_a = list(self.space.map_xy(x, y))
+        p_b = list(self.space.map_xy(x, y))
+        p_c = list(self.space.map_xy(x, y))
+        p_d = list(self.space.map_xy(x, y))
         p_b[1] += .75 * self.space.map_y_vector(1)
         p_c[0] += .75 * self.space.map_x_vector(1)
         p_c[1] += .75 * self.space.map_y_vector(1)
         p_d[0] += .75 * self.space.map_x_vector(1)
-        print(p_a + p_b + p_c + p_d)
         return p_a + p_b + p_c + p_d
 
     @property
-    def color(self):
-        #     glColor3f(1, 0, 0)
-        coordinate_count = 4  # Square
-        return (255, 0, 0) * coordinate_count
+    def coordinates(self):
+
+        coords = [self._coordinates(self.x, self.y)]
+        if self.o == 'vertical':
+            coords.append(self._coordinates(self.x, self.y + 1))
+        else:
+            coords.append(self._coordinates(self.x + 1, self.y))
+        return coords
 
     # color definition explained here:
     # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
     def draw(self):
-        a = pyglet.graphics.vertex_list(4, ('v2f', self.coordinates), ('c3B', self.color))
-        a.draw(GL_QUADS)
+        for c in self.coordinates:
+            a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
+            a.draw(GL_QUADS)
 
 
 window = pyglet.window.Window(width=600, height=600)
@@ -90,8 +102,15 @@ def on_draw():
     window.clear()
     board.draw()
     space = Space(dim1, dim2)
-    car = Car(space, 0, 0, 'vertical')
-    car.draw()
+    cars = [
+        Car(space, 0, 0, 'vertical', GREEN),
+        Car(space, 1, 1, 'horizontal', RED),
+        Car(space, 3, 2, 'horizontal', BLUE),
+        Car(space, 4, 4, 'vertical', BLACK)
+    ]
+    for car in cars:
+        car.draw()
+
 
 # @window.event
 # def on_key_press(symbol, modifiers):
