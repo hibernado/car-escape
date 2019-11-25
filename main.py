@@ -45,6 +45,17 @@ class Space:
         return r
 
 
+class Square:
+    coordinate_count = 4  # Squares have 4 x,y coordinates
+
+    def __init__(self, space, x, y, color):
+        self.space = space
+        self.x = x
+        self.y = y
+        # Todo: investigate glColor3f(1, 0, 0)
+        self.color = color * self.coordinate_count
+
+
 class Board:
     def __init__(self, image_path):
         self.image = pyglet.sprite.Sprite(pyglet.image.load(image_path))
