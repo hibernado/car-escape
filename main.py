@@ -2,6 +2,8 @@ import pyglet
 
 from pyglet.gl import GL_QUADS
 
+car_in_hand = None
+
 
 class DimensionMapping:
     def __init__(self, vector_array, const):
@@ -17,11 +19,17 @@ class Space:
         self._dim1 = dim1
         self._dim2 = dim2
 
+    def space_to_xy(self, value1, value2):
+        x = round(value1 / 84)
+        y = round(value2 / 84)
+        return x, y
+
     def map_xy(self, x, y):
         return self._dim1[x], self._dim2[y]
 
     # Todo: mapping board(1,1) -> space(dim1, dim2)
     # is not right. mixed logic between Space and DimensionMapping and Car (see .75*)
+    # mapping is not working correctly !!!
     def map_x_vector(self, x):
         if x > 0:
             r = self._dim1[x] - self._dim1[x - 1]
@@ -95,31 +103,50 @@ window = pyglet.window.Window(width=600, height=600)
 board = Board('images/grid.jpg')
 dim1 = DimensionMapping([85, 85, 84, 83, 84, 84], 58)
 dim2 = DimensionMapping([85, 84, 84, 84, 84, 84], 58)
+space = Space(dim1, dim2)
+cars = {(0, 0): Car(space, 0, 0, 'vertical', GREEN),
+        (1, 1): Car(space, 1, 1, 'horizontal', RED),
+        (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
+        (4, 4): Car(space, 4, 4, 'vertical', BLACK)
+        }
 
 
 @window.event
 def on_draw():
     window.clear()
     board.draw()
-    space = Space(dim1, dim2)
-    cars = [
-        Car(space, 0, 0, 'vertical', GREEN),
-        Car(space, 1, 1, 'horizontal', RED),
-        Car(space, 3, 2, 'horizontal', BLUE),
-        Car(space, 4, 4, 'vertical', BLACK)
-    ]
-    for car in cars:
+    for loc, car in cars.items():
         car.draw()
 
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    print((x, y, button, modifiers))
+    global car_in_hand
+    # button == mouse.LEFT
+    loc = tuple(space.space_to_xy(x, y))
+    print((x, y, loc))
+    car = cars[loc]
+    print(car.color)
+
+    car_in_hand = car
 
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     print((x, y, dx, dy, buttons, modifiers))
+    x_, y_ = space.space_to_xy(x, y)
+    if car_in_hand:
+        car_in_hand.x = x_
+        car_in_hand.y = y_
+        print('draw!')
+        car_in_hand.draw()
+
+
+@window.event
+def on_mouse_release(x, y, button, modifiers):
+    global car_in_hand
+    if car_in_hand:
+        car_in_hand = None
 
 
 # @window.event
