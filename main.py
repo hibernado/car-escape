@@ -6,12 +6,12 @@ car_in_hand = None
 
 
 class DimensionMapping:
-    def __init__(self, vector_array, const):
-        self.pa = vector_array
+    def __init__(self, unit_vector, const):
+        self.uv = unit_vector
         self.const = const
 
-    def __getitem__(self, index):
-        return sum(self.pa[0:index]) + self.const
+    def get(self, val):
+        return self.const + (self.uv * val)
 
 
 class Space:
@@ -20,40 +20,53 @@ class Space:
         self._dim2 = dim2
 
     def space_to_xy(self, value1, value2):
-        x = round(value1 / 84)
-        y = round(value2 / 84)
+        x = round( (value1-5) / 100)
+        y = round( (value2-5) / 100)
         return x, y
 
     def map_xy(self, x, y):
-        return self._dim1[x], self._dim2[y]
+        return self._dim1.get(x), self._dim2.get(y)
 
     # Todo: mapping board(1,1) -> space(dim1, dim2)
     # is not right. mixed logic between Space and DimensionMapping and Car (see .75*)
     # mapping is not working correctly !!!
     def map_x_vector(self, x):
-        if x > 0:
-            r = self._dim1[x] - self._dim1[x - 1]
-        else:
-            r = self._dim1[x]
-        return r
+        return self._dim1.get(x)
 
     def map_y_vector(self, y):
-        if y > 0:
-            r = self._dim2[y] - self._dim2[y - 1]
-        else:
-            r = self._dim2[y]
-        return r
+        return self._dim2.get(y)
 
 
 class Square:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
-    def __init__(self, space, x, y, color):
+    def __init__(self, space, x, y, w, h, color, border=None):
         self.space = space
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
+        self._w = w
+        self._h = h
         # Todo: investigate glColor3f(1, 0, 0)
         self.color = color * self.coordinate_count
+
+    def _coordinates(self, x, y, w, h):
+        p_a = list(self.space.map_xy(x, y))
+        p_b = list(self.space.map_xy(x, y + h))
+        p_c = list(self.space.map_xy(x + w, y + h))
+        p_d = list(self.space.map_xy(x + w, y))
+        return p_a + p_b + p_c + p_d
+
+    @property
+    def coordinates(self):
+        coords = [self._coordinates(self._x, self._y, self._w, self._h)]
+        return coords
+
+    # color definition explained here:
+    # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
+    def draw(self):
+        for c in self.coordinates:
+            a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
+            a.draw(GL_QUADS)
 
 
 class Board:
@@ -68,64 +81,73 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 
 class Car:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
     def __init__(self, space, x, y, o, color):
-        self.space = space
-        self.x = x
-        self.y = y
-        self.o = o
-        # Todo: investigate glColor3f(1, 0, 0)
-        self.color = color * self.coordinate_count
-
-    def _coordinates(self, x, y):
-        p_a = list(self.space.map_xy(x, y))
-        p_b = list(self.space.map_xy(x, y))
-        p_c = list(self.space.map_xy(x, y))
-        p_d = list(self.space.map_xy(x, y))
-        p_b[1] += .75 * self.space.map_y_vector(1)
-        p_c[0] += .75 * self.space.map_x_vector(1)
-        p_c[1] += .75 * self.space.map_y_vector(1)
-        p_d[0] += .75 * self.space.map_x_vector(1)
-        return p_a + p_b + p_c + p_d
-
-    @property
-    def coordinates(self):
-
-        coords = [self._coordinates(self.x, self.y)]
-        if self.o == 'vertical':
-            coords.append(self._coordinates(self.x, self.y + 1))
+        # self.space = space
+        # self.x = x
+        # self.y = y
+        # self.o = o
+        # # Todo: investigate glColor3f(1, 0, 0)
+        # self.color = color * self.coordinate_count
+        if o == 'vertical':
+            self.square = Square(space, x, y, 1, 2, color)
         else:
-            coords.append(self._coordinates(self.x + 1, self.y))
-        return coords
+            self.square = Square(space, x, y, 2, 1, color)
 
-    # color definition explained here:
-    # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
+    # def _coordinates(self, x, y):
+    #     p_a = list(self.space.map_xy(x, y))
+    #     p_b = list(self.space.map_xy(x, y))
+    #     p_c = list(self.space.map_xy(x, y))
+    #     p_d = list(self.space.map_xy(x, y))
+    #     p_b[1] += .75 * self.space.map_y_vector(1)
+    #     p_c[0] += .75 * self.space.map_x_vector(1)
+    #     p_c[1] += .75 * self.space.map_y_vector(1)
+    #     p_d[0] += .75 * self.space.map_x_vector(1)
+    #     return p_a + p_b + p_c + p_d
+    #
+    # @property
+    # def coordinates(self):
+    #
+    #     coords = [self._coordinates(self.x, self.y)]
+    #     if self.o == 'vertical':
+    #         coords.append(self._coordinates(self.x, self.y + 1))
+    #     else:
+    #         coords.append(self._coordinates(self.x + 1, self.y))
+    #     return coords
+    #
+    # # color definition explained here:
+    # # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
     def draw(self):
-        for c in self.coordinates:
-            a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
-            a.draw(GL_QUADS)
+        self.square.draw()
+        # for c in self.coordinates:
+        #     a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
+        #     a.draw(GL_QUADS)
 
 
 window = pyglet.window.Window(width=600, height=600)
 board = Board('images/grid.jpg')
-dim1 = DimensionMapping([85, 85, 84, 83, 84, 84], 58)
-dim2 = DimensionMapping([85, 84, 84, 84, 84, 84], 58)
+dim1 = DimensionMapping(100, 5)
+dim2 = DimensionMapping(100, 5)
 space = Space(dim1, dim2)
-cars = {(0, 0): Car(space, 0, 0, 'vertical', GREEN),
-        (1, 1): Car(space, 1, 1, 'horizontal', RED),
-        (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
-        (4, 4): Car(space, 4, 4, 'vertical', BLACK)
-        }
+cars = {  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
+    # (1, 1): Car(space, 1, 1, 'horizontal', RED),
+    # (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
+    (2, 1): Car(space, 2, 1, 'horizontal', BLACK)
+}
 
 
 @window.event
 def on_draw():
     window.clear()
-    board.draw()
+    # board.draw()
+    for i in range(7):
+        for j in range(7):
+            Square(space, i, j, .9, .9, WHITE).draw()
     for loc, car in cars.items():
         car.draw()
 
