@@ -90,21 +90,33 @@ class Car:
         self.squares = []
         self.move_to(self.x, self.y)
 
-    def valid_move(self, x, y):
+    def valid_move(self, x, y, board=None):
+
+        if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
+            print(board.spaces)
+            print(self.get_new_position(x, y))
+            return False
         if self.o == 'vertical':
             return x == self.x
         return y == self.y
 
-    def move_to(self, x, y):
-        if not self.valid_move(x, y):
+    def get_new_position(self, x, y):
+        xy_coords = [(x, y)]
+        if self.o == 'vertical':
+            xy_coords.append((x, y + 1))
+        else:
+            xy_coords.append((x + 1, y))
+        return xy_coords
+
+    def move_to(self, x, y, board=None):
+        if not self.valid_move(x, y, board):
             print('{}.{} -> {}.{} Not Allowed!!!'.format(self.x, self.y, x, y))
             return None
-        self.xy_coords = [(x, y)]
-        if self.o == 'vertical':
-            self.xy_coords.append((x, y + 1))
-        else:
-            self.xy_coords.append((x + 1, y))
+        if board and not board.path_is_free(self, self.x, self.y, x, y):
+            print('{}.{} -> {}.{} Blocked By Traffic!!!'.format(self.x, self.y, x, y))
+            return None
 
+        self.xy_coords = self.get_new_position(x, y)
         self.squares = []
         for coord in self.xy_coords:
             x, y = coord
@@ -113,6 +125,42 @@ class Car:
     def draw(self):
         for square in self.squares:
             square.draw()
+
+
+class TrafficJam:
+
+    def __init__(self, cars, size):
+        self.cars = cars
+        self.spaces = []
+        for i in range(size):
+            for j in range(size):
+                self.spaces.append((i,j))
+
+    def add_car(self, car):
+        self.cars.append(car)
+
+    def path_is_free(self, car, x1, y1, x2, y2):
+        # Todo: Needs refactoring!!! Ugly
+        if x2 >= x1:
+            range_func = range(x1, x2 + 1, 1)
+        else:
+            range_func = range(x1, x2 - 1, -1)
+
+        for x in range_func:
+            for car_ in self.cars:
+                if car_ is not car and set(car.get_new_position(x, y1)).intersection(set(car_.xy_coords)):
+                    return False
+        if y2 >= y1:
+            range_func = range(y1, y2 + 1, 1)
+        else:
+            range_func = range(y1, y2 - 1, -1)
+
+        for y in range_func:
+            for car_ in self.cars:
+                if car_ is not car and set(car.get_new_position(x1, y)).intersection(set(car_.xy_coords)):
+                    return False
+
+        return True
 
 
 window = pyglet.window.Window(width=600, height=600)
@@ -124,16 +172,17 @@ cars = [Car(space, 1, 1, 'horizontal', BLACK),
         Car(space, 3, 1, 'vertical', BLUE),
         Car(space, 1, 3, 'vertical', GREEN),
         Car(space, 3, 3, 'horizontal', RED)]
+jam = TrafficJam(cars, 6)
 
 
 @window.event
 def on_draw():
     window.clear()
     # board.draw()
-    for i in range(7):
-        for j in range(7):
+    for i in range(6):
+        for j in range(6):
             Square(space, i, j, .95, .95, WHITE).draw()
-    for car in cars:
+    for car in jam.cars:
         car.draw()
 
 
@@ -150,7 +199,7 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     x_, y_ = tuple(round(val) for val in space.map_space(x, y))
     for car in cars:
         if car.selected:
-            car.move_to(x_, y_)
+            car.move_to(x_, y_, jam)
 
 
 @window.event
