@@ -103,12 +103,6 @@ space = Space(dim1, dim2)
 cars = [Car(space, 1, 1, 'horizontal', BLACK)]  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
 
 
-# (1, 1): Car(space, 1, 1, 'horizontal', RED),
-#     # (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
-#     (0, 0):
-# }
-
-
 @window.event
 def on_draw():
     window.clear()
@@ -134,19 +128,11 @@ def on_mouse_press(x, y, button, modifiers):
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     print((x, y, dx, dy, buttons, modifiers))
     x_, y_ = space.map_space(x, y)
-    if car_in_hand:
-        car_in_hand.x = x_
-        car_in_hand.y = y_
-        print('draw!')
-        car_in_hand.draw()
 
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     pass
-    # global car_in_hand
-    # if car_in_hand:
-    #     car_in_hand = None
 
 
 # @window.event
