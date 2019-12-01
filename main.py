@@ -88,9 +88,17 @@ class Car:
         self.colour = colour
         self.xy_coords = []
         self.squares = []
-        self.update_location(self.x, self.y)
+        self.move_to(self.x, self.y)
 
-    def update_location(self, x ,y):
+    def valid_move(self, x, y):
+        if self.o == 'vertical':
+            return x == self.x
+        return y == self.y
+
+    def move_to(self, x, y):
+        if not self.valid_move(x, y):
+            print('{}.{} -> {}.{} Not Allowed!!!'.format(self.x, self.y, x, y))
+            return None
         self.xy_coords = [(x, y)]
         if self.o == 'vertical':
             self.xy_coords.append((x, y + 1))
@@ -137,13 +145,12 @@ def on_mouse_press(x, y, button, modifiers):
             car.selected = True
 
 
-
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     x_, y_ = tuple(round(val) for val in space.map_space(x, y))
     for car in cars:
         if car.selected:
-            car.update_location(x_, y_)
+            car.move_to(x_, y_)
 
 
 @window.event
