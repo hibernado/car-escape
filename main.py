@@ -78,9 +78,20 @@ WHITE = (255, 255, 255)
 
 class Car:
     def __init__(self, space, x, y, o, colour):
+        self.selected = False
         self.colour = colour
+        self.space = space
+        self.x = x
+        self.y = y
+        self.o = o
+        self.colour = colour
+        self.xy_coords = []
+        self.squares = []
+        self.update_location(self.x, self.y)
+
+    def update_location(self, x ,y):
         self.xy_coords = [(x, y)]
-        if o == 'vertical':
+        if self.o == 'vertical':
             self.xy_coords.append((x, y + 1))
         else:
             self.xy_coords.append((x + 1, y))
@@ -88,7 +99,7 @@ class Car:
         self.squares = []
         for coord in self.xy_coords:
             x, y = coord
-            self.squares.append(Square(space, x, y, .85, .85, colour))
+            self.squares.append(Square(self.space, x, y, .85, .85, self.colour))
 
     def draw(self):
         for square in self.squares:
@@ -100,7 +111,7 @@ board = Board('images/grid.jpg')
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
-cars = [Car(space, 1, 1, 'horizontal', BLACK)]  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
+cars = [Car(space, 1, 1, 'horizontal', BLACK)]
 
 
 @window.event
@@ -117,22 +128,25 @@ def on_draw():
 @window.event
 def on_mouse_press(x, y, button, modifiers):
     loc = tuple(round(val) for val in space.map_space(x, y))
-    print((x, y, loc))
     for car in cars:
         if loc in car.xy_coords:
-            print(car.colour)
-    # button == mouse.LEFT
+            car.selected = True
+
 
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    print((x, y, dx, dy, buttons, modifiers))
-    x_, y_ = space.map_space(x, y)
+    x_, y_ = tuple(round(val) for val in space.map_space(x, y))
+    for car in cars:
+        if car.selected:
+            car.update_location(x_, y_)
 
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    pass
+    for car in cars:
+        if car.selected:
+            car.selected = False
 
 
 # @window.event
