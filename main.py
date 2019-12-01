@@ -32,14 +32,14 @@ class Space:
 class Square:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
-    def __init__(self, space, x, y, w, h, color):
+    def __init__(self, space, x, y, w, h, colour):
         self.space = space
         self._x = x
         self._y = y
         self._w = w
         self._h = h
         # Todo: investigate glColor3f(1, 0, 0)
-        self.color = color * self.coordinate_count
+        self.colour = colour * self.coordinate_count
 
     def _coordinates(self, x, y, w, h):
         p_a = list(self.space.map_xy(x - (w / 2), y - (h / 2)))
@@ -57,7 +57,7 @@ class Square:
     # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
     def draw(self):
         for c in self.coordinates:
-            a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
+            a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.colour))
             a.draw(GL_QUADS)
 
 
@@ -77,7 +77,8 @@ WHITE = (255, 255, 255)
 
 
 class Car:
-    def __init__(self, space, x, y, o, color):
+    def __init__(self, space, x, y, o, colour):
+        self.colour = colour
         self.xy_coords = [(x, y)]
         if o == 'vertical':
             self.xy_coords.append((x, y + 1))
@@ -87,7 +88,7 @@ class Car:
         self.squares = []
         for coord in self.xy_coords:
             x, y = coord
-            self.squares.append(Square(space, x, y, .85, .85, color))
+            self.squares.append(Square(space, x, y, .85, .85, colour))
 
     def draw(self):
         for square in self.squares:
@@ -99,11 +100,13 @@ board = Board('images/grid.jpg')
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
-cars = {  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
-    # (1, 1): Car(space, 1, 1, 'horizontal', RED),
-    # (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
-    (0, 0): Car(space, 1, 1, 'horizontal', BLACK)
-}
+cars = [Car(space, 1, 1, 'horizontal', BLACK)]  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
+
+
+# (1, 1): Car(space, 1, 1, 'horizontal', RED),
+#     # (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
+#     (0, 0):
+# }
 
 
 @window.event
@@ -113,18 +116,18 @@ def on_draw():
     for i in range(7):
         for j in range(7):
             Square(space, i, j, .95, .95, WHITE).draw()
-    for loc, car in cars.items():
+    for car in cars:
         car.draw()
 
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    global car_in_hand
-    # button == mouse.LEFT
     loc = tuple(round(val) for val in space.map_space(x, y))
     print((x, y, loc))
-    # car = cars[loc]
-    # print(car.color)
+    for car in cars:
+        if loc in car.xy_coords:
+            print(car.colour)
+    # button == mouse.LEFT
 
 
 @window.event
@@ -140,9 +143,10 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    global car_in_hand
-    if car_in_hand:
-        car_in_hand = None
+    pass
+    # global car_in_hand
+    # if car_in_hand:
+    #     car_in_hand = None
 
 
 # @window.event
