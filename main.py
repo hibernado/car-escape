@@ -10,8 +10,11 @@ class DimensionMapping:
         self.uv = unit_vector
         self.const = const
 
-    def get(self, val):
+    def map_to(self, val):
         return self.const + (self.uv * val)
+
+    def map_from(self, dim_val):
+        return (dim_val - self.const)/self.uv
 
 
 class Space:
@@ -19,22 +22,22 @@ class Space:
         self._dim1 = dim1
         self._dim2 = dim2
 
-    def space_to_xy(self, value1, value2):
-        x = round((value1 - 5) / 100)
-        y = round((value2 - 5) / 100)
+    def map_space(self, value1, value2):
+        x = self._dim1.map_from(value1)
+        y = self._dim2.map_from(value2)
         return x, y
 
     def map_xy(self, x, y):
-        return self._dim1.get(x), self._dim2.get(y)
+        return self._dim1.map_to(x), self._dim2.map_to(y)
 
     # Todo: mapping board(1,1) -> space(dim1, dim2)
     # is not right. mixed logic between Space and DimensionMapping and Car (see .75*)
     # mapping is not working correctly !!!
     def map_x_vector(self, x):
-        return self._dim1.get(x)
+        return self._dim1.map_to(x)
 
     def map_y_vector(self, y):
-        return self._dim2.get(y)
+        return self._dim2.map_to(y)
 
 
 class Square:
@@ -136,18 +139,18 @@ def on_draw():
 def on_mouse_press(x, y, button, modifiers):
     global car_in_hand
     # button == mouse.LEFT
-    loc = tuple(space.space_to_xy(x, y))
+    loc = tuple(round(val) for val in space.map_space(x, y))
     print((x, y, loc))
-    car = cars[loc]
-    print(car.color)
+    # car = cars[loc]
+    # print(car.color)
 
-    car_in_hand = car
+    # car_in_hand = car
 
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     print((x, y, dx, dy, buttons, modifiers))
-    x_, y_ = space.space_to_xy(x, y)
+    x_, y_ = space.map_space(x, y)
     if car_in_hand:
         car_in_hand.x = x_
         car_in_hand.y = y_
