@@ -91,17 +91,16 @@ class Car:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
     def __init__(self, space, x, y, o, color):
-        # self.space = space
-        # self.x = x
-        # self.y = y
-        # self.o = o
-        # # Todo: investigate glColor3f(1, 0, 0)
-        # self.color = color * self.coordinate_count
-        self.squares = [Square(space, x, y, .85, .85, color)]
+        self.xy_coords = [(x,y)]
         if o == 'vertical':
-            self.squares.append(Square(space, x, y + 1, .85, .85, color))
+            self.xy_coords.append( (x, y + 1))
         else:
-            self.squares.append(Square(space, x + 1, y, .85, .85, color))
+            self.xy_coords.append((x+1, y))
+
+        self.squares =[]
+        for coord in self.xy_coords:
+            x, y = coord
+            self.squares.append(Square(space, x, y, .85, .85, color))
 
     def draw(self):
         for square in self.squares:
