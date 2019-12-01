@@ -2,8 +2,6 @@ import pyglet
 
 from pyglet.gl import GL_QUADS
 
-car_in_hand = None
-
 
 class DimensionMapping:
     def __init__(self, unit_vector, const):
@@ -14,7 +12,7 @@ class DimensionMapping:
         return self.const + (self.uv * val)
 
     def map_from(self, dim_val):
-        return (dim_val - self.const)/self.uv
+        return (dim_val - self.const) / self.uv
 
 
 class Space:
@@ -30,20 +28,11 @@ class Space:
     def map_xy(self, x, y):
         return self._dim1.map_to(x), self._dim2.map_to(y)
 
-    # Todo: mapping board(1,1) -> space(dim1, dim2)
-    # is not right. mixed logic between Space and DimensionMapping and Car (see .75*)
-    # mapping is not working correctly !!!
-    def map_x_vector(self, x):
-        return self._dim1.map_to(x)
-
-    def map_y_vector(self, y):
-        return self._dim2.map_to(y)
-
 
 class Square:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
-    def __init__(self, space, x, y, w, h, color, border=None):
+    def __init__(self, space, x, y, w, h, color):
         self.space = space
         self._x = x
         self._y = y
@@ -88,16 +77,14 @@ WHITE = (255, 255, 255)
 
 
 class Car:
-    coordinate_count = 4  # Squares have 4 x,y coordinates
-
     def __init__(self, space, x, y, o, color):
-        self.xy_coords = [(x,y)]
+        self.xy_coords = [(x, y)]
         if o == 'vertical':
-            self.xy_coords.append( (x, y + 1))
+            self.xy_coords.append((x, y + 1))
         else:
-            self.xy_coords.append((x+1, y))
+            self.xy_coords.append((x + 1, y))
 
-        self.squares =[]
+        self.squares = []
         for coord in self.xy_coords:
             x, y = coord
             self.squares.append(Square(space, x, y, .85, .85, color))
@@ -105,10 +92,6 @@ class Car:
     def draw(self):
         for square in self.squares:
             square.draw()
-        # self.square.draw()
-        # for c in self.coordinates:
-        #     a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
-        #     a.draw(GL_QUADS)
 
 
 window = pyglet.window.Window(width=600, height=600)
@@ -142,8 +125,6 @@ def on_mouse_press(x, y, button, modifiers):
     print((x, y, loc))
     # car = cars[loc]
     # print(car.color)
-
-    # car_in_hand = car
 
 
 @window.event
