@@ -20,8 +20,8 @@ class Space:
         self._dim2 = dim2
 
     def space_to_xy(self, value1, value2):
-        x = round( (value1-5) / 100)
-        y = round( (value2-5) / 100)
+        x = round((value1 - 5) / 100)
+        y = round((value2 - 5) / 100)
         return x, y
 
     def map_xy(self, x, y):
@@ -50,10 +50,10 @@ class Square:
         self.color = color * self.coordinate_count
 
     def _coordinates(self, x, y, w, h):
-        p_a = list(self.space.map_xy(x, y))
-        p_b = list(self.space.map_xy(x, y + h))
-        p_c = list(self.space.map_xy(x + w, y + h))
-        p_d = list(self.space.map_xy(x + w, y))
+        p_a = list(self.space.map_xy(x - (w / 2), y - (h / 2)))
+        p_b = list(self.space.map_xy(x - (w / 2), y + (h / 2)))
+        p_c = list(self.space.map_xy(x + (w / 2), y + (h / 2)))
+        p_d = list(self.space.map_xy(x + (w / 2), y - (h / 2)))
         return p_a + p_b + p_c + p_d
 
     @property
@@ -94,36 +94,16 @@ class Car:
         # self.o = o
         # # Todo: investigate glColor3f(1, 0, 0)
         # self.color = color * self.coordinate_count
+        self.squares = [Square(space, x, y, .85, .85, color)]
         if o == 'vertical':
-            self.square = Square(space, x, y, 1, 2, color)
+            self.squares.append(Square(space, x, y + 1, .85, .85, color))
         else:
-            self.square = Square(space, x, y, 2, 1, color)
+            self.squares.append(Square(space, x + 1, y, .85, .85, color))
 
-    # def _coordinates(self, x, y):
-    #     p_a = list(self.space.map_xy(x, y))
-    #     p_b = list(self.space.map_xy(x, y))
-    #     p_c = list(self.space.map_xy(x, y))
-    #     p_d = list(self.space.map_xy(x, y))
-    #     p_b[1] += .75 * self.space.map_y_vector(1)
-    #     p_c[0] += .75 * self.space.map_x_vector(1)
-    #     p_c[1] += .75 * self.space.map_y_vector(1)
-    #     p_d[0] += .75 * self.space.map_x_vector(1)
-    #     return p_a + p_b + p_c + p_d
-    #
-    # @property
-    # def coordinates(self):
-    #
-    #     coords = [self._coordinates(self.x, self.y)]
-    #     if self.o == 'vertical':
-    #         coords.append(self._coordinates(self.x, self.y + 1))
-    #     else:
-    #         coords.append(self._coordinates(self.x + 1, self.y))
-    #     return coords
-    #
-    # # color definition explained here:
-    # # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
     def draw(self):
-        self.square.draw()
+        for square in self.squares:
+            square.draw()
+        # self.square.draw()
         # for c in self.coordinates:
         #     a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.color))
         #     a.draw(GL_QUADS)
@@ -131,13 +111,13 @@ class Car:
 
 window = pyglet.window.Window(width=600, height=600)
 board = Board('images/grid.jpg')
-dim1 = DimensionMapping(100, 5)
-dim2 = DimensionMapping(100, 5)
+dim1 = DimensionMapping(100, 50)
+dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
 cars = {  # (0, 0): Car(space, 0, 0, 'vertical', GREEN),
     # (1, 1): Car(space, 1, 1, 'horizontal', RED),
     # (3, 2): Car(space, 3, 2, 'horizontal', BLUE),
-    (2, 1): Car(space, 2, 1, 'horizontal', BLACK)
+    (0, 0): Car(space, 1, 1, 'horizontal', BLACK)
 }
 
 
@@ -147,7 +127,7 @@ def on_draw():
     # board.draw()
     for i in range(7):
         for j in range(7):
-            Square(space, i, j, .9, .9, WHITE).draw()
+            Square(space, i, j, .95, .95, WHITE).draw()
     for loc, car in cars.items():
         car.draw()
 
