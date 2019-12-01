@@ -78,6 +78,7 @@ WHITE = (255, 255, 255)
 
 class Car:
     def __init__(self, space, x, y, o, colour):
+        # remove selected from Car class
         self.selected = False
         self.colour = colour
         self.space = space
@@ -111,7 +112,10 @@ board = Board('images/grid.jpg')
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
-cars = [Car(space, 1, 1, 'horizontal', BLACK)]
+cars = [Car(space, 1, 1, 'horizontal', BLACK),
+        Car(space, 3, 1, 'vertical', BLUE),
+        Car(space, 1, 3, 'vertical', GREEN),
+        Car(space, 3, 3, 'horizontal', RED)]
 
 
 @window.event
