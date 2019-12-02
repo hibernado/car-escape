@@ -23,6 +23,7 @@ class Space:
     def map_space(self, value1, value2):
         x = self._dim1.map_from(value1)
         y = self._dim2.map_from(value2)
+        print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
         return x, y
 
     def map_xy(self, x, y):
@@ -59,7 +60,6 @@ class Square:
         for c in self.coordinates:
             a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.colour))
             a.draw(GL_QUADS)
-
 
 
 RED = (255, 0, 0)
@@ -129,7 +129,7 @@ class TrafficJam:
         self.spaces = []
         for i in range(size):
             for j in range(size):
-                self.spaces.append((i,j))
+                self.spaces.append((i, j))
 
     def add_car(self, car):
         self.cars.append(car)
@@ -188,6 +188,7 @@ def on_mouse_press(x, y, button, modifiers):
     for car in cars:
         if loc in car.xy_coords:
             car.selected = True
+            print("Car @{}".format(car.xy_coords))
 
 
 @window.event
