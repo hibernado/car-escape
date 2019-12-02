@@ -181,6 +181,7 @@ def on_draw():
 @window.event
 def on_mouse_press(x, y, button, modifiers):
     loc = tuple(round(val) for val in space.map_space(x, y))
+    print('on_mouse_press @ {},{} -> {}'.format(x, y, loc))
     for car in cars:
         if loc in car.xy_coords:
             car.selected = True
