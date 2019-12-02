@@ -61,13 +61,6 @@ class Square:
             a.draw(GL_QUADS)
 
 
-class Board:
-    def __init__(self, image_path):
-        self.image = pyglet.sprite.Sprite(pyglet.image.load(image_path))
-
-    def draw(self):
-        self.image.draw()
-
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -164,7 +157,6 @@ class TrafficJam:
 
 
 window = pyglet.window.Window(width=600, height=600)
-board = Board('images/grid.jpg')
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
