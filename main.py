@@ -88,7 +88,6 @@ class Car:
     def valid_move(self, x, y, board=None):
         print("Valid move {}.{}".format(x, y))
         if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
-            print(board.spaces)
             print(self.get_new_position(x, y))
             return False
         if self.o == 'vertical':
@@ -129,10 +128,30 @@ class Board:
 
     def __init__(self, cars, size):
         self.cars = cars
+        self.size = size
+
         self.spaces = []
         for i in range(size):
             for j in range(size):
                 self.spaces.append((i, j))
+
+        self.background_squares = []
+
+        for loc in self.spaces:
+            x, y = loc
+            square = Square(space, x, y, .95, .95, WHITE)
+            self.background_squares.append(square)
+
+        self.draw()
+
+    def draw(self):
+        for square in self.background_squares:
+            square.draw()
+        # for i in range(self.size):
+        #     for j in range(self.size):
+        #         Square(space, i, j, .95, .95, WHITE).draw()
+        for car in self.cars:
+            car.draw()
 
     def add_car(self, car):
         self.cars.append(car)
@@ -170,17 +189,13 @@ cars = [Car(space, 1, 1, 'horizontal', BLACK),
         Car(space, 3, 1, 'vertical', BLUE),
         Car(space, 1, 3, 'vertical', GREEN),
         Car(space, 3, 3, 'horizontal', RED)]
-board = Board(cars, 6)
+board = Board(cars, size=6)
 
 
 @window.event
 def on_draw():
     window.clear()
-    for i in range(6):
-        for j in range(6):
-            Square(space, i, j, .95, .95, WHITE).draw()
-    for car in board.cars:
-        car.draw()
+    board.draw()
 
 
 @window.event
