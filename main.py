@@ -75,13 +75,15 @@ class Car:
         self.selected = False
         self.colour = colour
         self.space = space
+        self.x_init = x
+        self.y_init = y
         self.x = x
         self.y = y
         self.o = o
         self.colour = colour
         self.xy_coords = []
         self.squares = []
-        self.move_to(self.x, self.y)
+        self.move_to(x, y)
 
     def valid_move(self, x, y, board=None):
         print("Valid move {}.{}".format(x, y))
@@ -90,8 +92,8 @@ class Car:
             print(self.get_new_position(x, y))
             return False
         if self.o == 'vertical':
-            return x == self.x
-        return y == self.y
+            return x == self.x_init
+        return y == self.y_init
 
     def get_new_position(self, x, y):
         print("Current position: {}".format(self.xy_coords))
@@ -112,6 +114,7 @@ class Car:
             return None
 
         self.xy_coords = self.get_new_position(x, y)
+        self.x, self.y = self.xy_coords[0]
         self.squares = []
         for coord in self.xy_coords:
             x, y = coord
@@ -122,7 +125,7 @@ class Car:
             square.draw()
 
 
-class TrafficJam:
+class Board:
 
     def __init__(self, cars, size):
         self.cars = cars
@@ -167,17 +170,16 @@ cars = [Car(space, 1, 1, 'horizontal', BLACK),
         Car(space, 3, 1, 'vertical', BLUE),
         Car(space, 1, 3, 'vertical', GREEN),
         Car(space, 3, 3, 'horizontal', RED)]
-jam = TrafficJam(cars, 6)
+board = Board(cars, 6)
 
 
 @window.event
 def on_draw():
     window.clear()
-    # board.draw()
     for i in range(6):
         for j in range(6):
             Square(space, i, j, .95, .95, WHITE).draw()
-    for car in jam.cars:
+    for car in board.cars:
         car.draw()
 
 
@@ -198,7 +200,7 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     x_, y_ = loc
     for car in cars:
         if car.selected:
-            car.move_to(x_, y_, jam)
+            car.move_to(x_, y_, board)
 
 
 @window.event
