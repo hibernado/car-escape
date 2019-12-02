@@ -84,7 +84,7 @@ class Car:
         self.move_to(self.x, self.y)
 
     def valid_move(self, x, y, board=None):
-
+        print("Valid move {}.{}".format(x, y))
         if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
             print(board.spaces)
             print(self.get_new_position(x, y))
