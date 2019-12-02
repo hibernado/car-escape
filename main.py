@@ -94,11 +94,13 @@ class Car:
         return y == self.y
 
     def get_new_position(self, x, y):
+        print("Current position: {}".format(self.xy_coords))
         xy_coords = [(x, y)]
         if self.o == 'vertical':
             xy_coords.append((x, y + 1))
         else:
             xy_coords.append((x + 1, y))
+        print("New position: {}".format(xy_coords))
         return xy_coords
 
     def move_to(self, x, y, board=None):
@@ -133,6 +135,7 @@ class TrafficJam:
         self.cars.append(car)
 
     def path_is_free(self, car, x1, y1, x2, y2):
+        print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
         # Todo: Needs refactoring!!! Ugly
         if x2 >= x1:
             range_func = range(x1, x2 + 1, 1)
@@ -189,7 +192,9 @@ def on_mouse_press(x, y, button, modifiers):
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    x_, y_ = tuple(round(val) for val in space.map_space(x, y))
+    loc = tuple(round(val) for val in space.map_space(x, y))
+    print('on_mouse_drag @ {},{} -> {}'.format(x, y, loc))
+    x_, y_ = loc
     for car in cars:
         if car.selected:
             car.move_to(x_, y_, jam)
