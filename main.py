@@ -189,7 +189,7 @@ cars = [Car(space, 1, 1, 'horizontal', BLACK),
         Car(space, 3, 1, 'vertical', BLUE),
         Car(space, 1, 3, 'vertical', GREEN),
         Car(space, 3, 3, 'horizontal', RED)]
-board = Board(cars, size=6)
+board = Board(cars=cars, size=6)
 
 
 @window.event
