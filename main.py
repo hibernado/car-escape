@@ -227,17 +227,15 @@ def on_mouse_press(dim1, dim2, button, modifiers):
     position = board.get_position(x, y)
     if position.vehicle:
         position.vehicle.selected = True
-        print("Vehical selected @{}".format(position.vehicle.xy_coords))
+        print("Vehicle selected @{}".format(position.vehicle.xy_coords))
 
 
 @window.event
-def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    loc = tuple(round(val) for val in space.map_space(x, y))
-    print('on_mouse_drag @ {},{} -> {}'.format(x, y, loc))
-    x_, y_ = loc
+def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
+    x, y = space.map_space(dim1, dim2)
     for car in cars:
         if car.selected:
-            car.move_to(x_, y_, board)
+            car.move_to(x, y, board)
 
 
 @window.event
