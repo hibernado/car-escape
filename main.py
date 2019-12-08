@@ -90,6 +90,9 @@ class Car:
         if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
             print(self.get_new_position(x, y))
             return False
+        return self._valid_vehicle_move(x, y)
+
+    def _valid_vehicle_move(self, x, y):
         if self.o == 'vertical':
             return x == self.x_init
         return y == self.y_init
@@ -155,6 +158,9 @@ class Board:
 
     def add_car(self, car):
         self.cars.append(car)
+
+    def move_car(self, car):
+        pass
 
     def path_is_free(self, car, x1, y1, x2, y2):
         print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
