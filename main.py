@@ -71,6 +71,7 @@ WHITE = (255, 255, 255)
 
 class Car:
     length = 2
+
     def __init__(self, space, x, y, o, colour):
         # remove selected from Car class
         self.selected = False
@@ -84,28 +85,13 @@ class Car:
         self.colour = colour
         self.xy_coords = []
         self.squares = []
-        self.move_to(x, y)
+        self.move_to(BaseLocation(x, y))
 
-    # todo: remove
-    def valid_move(self, x, y, board=None):
-        print("Valid move {}.{}".format(x, y))
-        if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
-            print(self.get_new_position(x, y))
-            return False
-        return self.valid_vehicle_move(x, y)
-
-    # todo remove
-    def valid_vehicle_move(self, x, y):
-        if self.o == 'vertical':
-            return x == self.x_init
-        return y == self.y_init
-
-    # todo make
-    def valid_position_move(self, new_position):
+    # # todo make
+    def valid_move(self, new_position):
         if self.o == 'vertical':
             return self.x_init == new_position.x
         return self.y_init == new_position.y
-
 
     # todo: merge with get_coords
     def get_new_position(self, x, y):
@@ -121,10 +107,8 @@ class Car:
     def get_coords(self, position):
         return self.get_new_position(position.x, position.y)
 
-    # todo: get_rid
-    def move_to(self, x, y, board=None):
-
-        self.xy_coords = self.get_new_position(x, y)
+    def move_to(self, position):
+        self.xy_coords = self.get_coords(position)
         self.x, self.y = self.xy_coords[0]
         self.squares = []
         for coord in self.xy_coords:
@@ -175,7 +159,7 @@ class Board:
         return vob
 
     def move_vehicle(self, vehicle, new_position):
-        if not vehicle.valid_position_move(new_position):
+        if not vehicle.valid_move(new_position):
             print('NOT VALID VEHICLE MOVE !!!')
             return None
         if not self.vehicle_on_board(vehicle, new_position):
@@ -184,7 +168,7 @@ class Board:
         if not self.path_is_free(vehicle, vehicle.x, vehicle.y, new_position.x, new_position.y):
             print('PATH IS NOT FREE')
             return None
-        vehicle.move_to(new_position.x, new_position.y)
+        vehicle.move_to(new_position)
 
     def path_is_free(self, car, x1, y1, x2, y2):
         print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
@@ -214,17 +198,20 @@ class Board:
         return Position(x, y, self)
 
 
-class Position:
-    def __init__(self, x, y, board):
-
+class BaseLocation:
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-
-        self.board = board
 
     @property
     def location(self):
         return tuple((self.x, self.y))
+
+
+class Position(BaseLocation):
+    def __init__(self, x, y, board):
+        super().__init__(x, y)
+        self.board = board
 
     @property
     def vehicle(self):
