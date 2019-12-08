@@ -215,10 +215,10 @@ window = pyglet.window.Window(width=600, height=600)
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
-cars = [Car(space, 1, 1, 'horizontal', BLACK),
-        Car(space, 3, 1, 'vertical', BLUE),
-        Car(space, 1, 3, 'vertical', GREEN),
-        Car(space, 3, 3, 'horizontal', RED)]
+cars = [Car(1, 1, 'horizontal', BLACK),
+        Car(3, 1, 'vertical', BLUE),
+        Car(1, 3, 'vertical', GREEN),
+        Car(3, 3, 'horizontal', RED)]
 board = Board(cars=cars, size=6, space=space)
 
 
