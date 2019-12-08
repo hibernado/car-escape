@@ -123,12 +123,6 @@ class Car:
 
     # todo: get_rid
     def move_to(self, x, y, board=None):
-        if not self.valid_move(x, y, board):
-            print('{}.{} -> {}.{} Not Allowed!!!'.format(self.x, self.y, x, y))
-            return None
-        if board and not board.path_is_free(self, self.x, self.y, x, y):
-            print('{}.{} -> {}.{} Blocked By Traffic!!!'.format(self.x, self.y, x, y))
-            return None
 
         self.xy_coords = self.get_new_position(x, y)
         self.x, self.y = self.xy_coords[0]
