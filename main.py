@@ -187,15 +187,13 @@ class Board:
 
         return True
 
-    def get_position(self, dim1, dim2):
-        loc = self.space.map_space(dim1, dim2)
-
-        return Position(loc, self)
+    def get_position(self, x, y):
+        return Position(x, y, self)
 
 
 class Position:
-    def __init__(self, loc, board):
-        self.location = loc
+    def __init__(self, x, y, board):
+        self.location = tuple((x, y))
         self.board = board
 
     @property
@@ -225,7 +223,8 @@ def on_draw():
 
 @window.event
 def on_mouse_press(dim1, dim2, button, modifiers):
-    position = board.get_position(dim1, dim2)
+    x, y = space.map_space(dim1, dim2)
+    position = board.get_position(x, y)
     if position.vehicle:
         position.vehicle.selected = True
         print("Vehical selected @{}".format(position.vehicle.xy_coords))
