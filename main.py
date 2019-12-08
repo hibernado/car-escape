@@ -72,13 +72,9 @@ WHITE = (255, 255, 255)
 class Car:
     length = 2
 
-    def __init__(self, space, x, y, o, colour):
-        # remove selected from Car class
+    def __init__(self, x, y, o, colour):
         self.selected = False
         self.colour = colour
-        self.space = space
-        self.x_init = x
-        self.y_init = y
         self.x = x
         self.y = y
         self.o = o
@@ -87,11 +83,10 @@ class Car:
         self.squares = []
         self.move_to(BaseLocation(x, y))
 
-    # # todo make
     def valid_move(self, new_position):
         if self.o == 'vertical':
-            return self.x_init == new_position.x
-        return self.y_init == new_position.y
+            return self.x == new_position.x
+        return self.y == new_position.y
 
     # todo: merge with get_coords
     def get_new_position(self, x, y):
@@ -110,14 +105,6 @@ class Car:
     def move_to(self, position):
         self.xy_coords = self.get_coords(position)
         self.x, self.y = self.xy_coords[0]
-        self.squares = []
-        for coord in self.xy_coords:
-            x, y = coord
-            self.squares.append(Square(self.space, x, y, .85, .85, self.colour))
-
-    def draw(self):
-        for square in self.squares:
-            square.draw()
 
 
 class Board:
@@ -144,11 +131,14 @@ class Board:
     def draw(self):
         for square in self.background_squares:
             square.draw()
-        # for i in range(self.size):
-        #     for j in range(self.size):
-        #         Square(space, i, j, .95, .95, WHITE).draw()
         for car in self.vehicles:
-            car.draw()
+            squares = []
+            for coord in car.xy_coords:
+                x, y = coord
+                squares.append(Square(self.space, x, y, .85, .85, car.colour))
+            for square in squares:
+                square.draw()
+
 
     def add_car(self, car):
         self.vehicles.append(car)
