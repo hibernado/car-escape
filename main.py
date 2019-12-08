@@ -21,10 +21,10 @@ class Space:
         self._dim2 = dim2
 
     def map_space(self, value1, value2):
-        x = self._dim1.map_from(value1)
-        y = self._dim2.map_from(value2)
+        x = round(self._dim1.map_from(value1))
+        y = round(self._dim2.map_from(value2))
         print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
-        return x, y
+        return tuple((x, y))
 
     def map_xy(self, x, y):
         return self._dim1.map_to(x), self._dim2.map_to(y)
@@ -129,9 +129,10 @@ class Car:
 
 class Board:
 
-    def __init__(self, cars, size):
-        self.cars = cars
+    def __init__(self, cars, size, space):
+        self.vehicles = cars
         self.size = size
+        self.space = space
 
         self.spaces = []
         for i in range(size):
@@ -153,13 +154,13 @@ class Board:
         # for i in range(self.size):
         #     for j in range(self.size):
         #         Square(space, i, j, .95, .95, WHITE).draw()
-        for car in self.cars:
+        for car in self.vehicles:
             car.draw()
 
     def add_car(self, car):
-        self.cars.append(car)
+        self.vehicles.append(car)
 
-    def move_car(self, car):
+    def move_vehicle(self, car):
         pass
 
     def path_is_free(self, car, x1, y1, x2, y2):
@@ -171,7 +172,7 @@ class Board:
             range_func = range(x1, x2 - 1, -1)
 
         for x in range_func:
-            for car_ in self.cars:
+            for car_ in self.vehicles:
                 if car_ is not car and set(car.get_new_position(x, y1)).intersection(set(car_.xy_coords)):
                     return False
         if y2 >= y1:
@@ -180,11 +181,29 @@ class Board:
             range_func = range(y1, y2 - 1, -1)
 
         for y in range_func:
-            for car_ in self.cars:
+            for car_ in self.vehicles:
                 if car_ is not car and set(car.get_new_position(x1, y)).intersection(set(car_.xy_coords)):
                     return False
 
         return True
+
+    def get_position(self, dim1, dim2):
+        loc = self.space.map_space(dim1, dim2)
+
+        return Position(loc, self)
+
+
+class Position:
+    def __init__(self, loc, board):
+        self.location = loc
+        self.board = board
+
+    @property
+    def vehicle(self):
+        for vehicle in self.board.vehicles:
+            if self.location in vehicle.xy_coords:
+                return vehicle
+        return None
 
 
 window = pyglet.window.Window(width=600, height=600)
@@ -195,7 +214,7 @@ cars = [Car(space, 1, 1, 'horizontal', BLACK),
         Car(space, 3, 1, 'vertical', BLUE),
         Car(space, 1, 3, 'vertical', GREEN),
         Car(space, 3, 3, 'horizontal', RED)]
-board = Board(cars=cars, size=6)
+board = Board(cars=cars, size=6, space=space)
 
 
 @window.event
@@ -205,13 +224,11 @@ def on_draw():
 
 
 @window.event
-def on_mouse_press(x, y, button, modifiers):
-    loc = tuple(round(val) for val in space.map_space(x, y))
-    print('on_mouse_press @ {},{} -> {}'.format(x, y, loc))
-    for car in cars:
-        if loc in car.xy_coords:
-            car.selected = True
-            print("Car @{}".format(car.xy_coords))
+def on_mouse_press(dim1, dim2, button, modifiers):
+    position = board.get_position(dim1, dim2)
+    if position.vehicle:
+        position.vehicle.selected = True
+        print("Vehical selected @{}".format(position.vehicle.xy_coords))
 
 
 @window.event
