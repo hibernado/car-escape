@@ -109,8 +109,8 @@ class Car:
 
 class Board:
 
-    def __init__(self, cars, size, space):
-        self.vehicles = cars
+    def __init__(self, vehicles, size, space):
+        self.vehicles = vehicles
         self.size = size
         self.space = space
 
@@ -221,7 +221,7 @@ cars = [Car(1, 1, 'horizontal', BLACK),
         Car(3, 1, 'vertical', BLUE),
         Car(1, 3, 'vertical', GREEN),
         Car(3, 3, 'horizontal', RED)]
-board = Board(cars=cars, size=6, space=space)
+board = Board(vehicles=cars, size=6, space=space)
 
 
 @window.event
@@ -253,11 +253,6 @@ def on_mouse_release(dim1, dim2, button, modifiers):
     for car in cars:
         if car.selected:
             car.selected = False
-
-
-# @window.event
-# def on_key_press(symbol, modifiers):
-#     print('A key was pressed')
 
 
 if __name__ == "__main__":
