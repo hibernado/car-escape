@@ -75,36 +75,36 @@ class Car:
     def __init__(self, x, y, o, colour):
         self.selected = False
         self.colour = colour
-        self.x = x
-        self.y = y
         self.o = o
         self.colour = colour
         self.xy_coords = []
-        self.squares = []
         self.move_to(BaseLocation(x, y))
+        # use location consistently throughout (remove any reference to x,y)
+
+    @property
+    def x(self):
+        return self.xy_coords[0][0]
+
+    @property
+    def y(self):
+        return self.xy_coords[0][1]
 
     def valid_move(self, new_position):
         if self.o == 'vertical':
             return self.x == new_position.x
         return self.y == new_position.y
 
-    # todo: merge with get_coords
     def get_new_position(self, x, y):
-        print("Current position: {}".format(self.xy_coords))
-        xy_coords = [(x, y)]
         if self.o == 'vertical':
-            xy_coords.append((x, y + 1))
+            return [(x, y), (x, y + 1)]
         else:
-            xy_coords.append((x + 1, y))
-        print("New position: {}".format(xy_coords))
-        return xy_coords
+            return [(x, y), (x + 1, y)]
 
     def get_coords(self, position):
         return self.get_new_position(position.x, position.y)
 
     def move_to(self, position):
         self.xy_coords = self.get_coords(position)
-        self.x, self.y = self.xy_coords[0]
 
 
 class Board:
@@ -138,7 +138,6 @@ class Board:
                 squares.append(Square(self.space, x, y, .85, .85, car.colour))
             for square in squares:
                 square.draw()
-
 
     def add_car(self, car):
         self.vehicles.append(car)
@@ -196,6 +195,9 @@ class BaseLocation:
     @property
     def location(self):
         return tuple((self.x, self.y))
+
+    def __repr__(self):
+        return "Location {},{}".format(self.x, self.y)
 
 
 class Position(BaseLocation):
