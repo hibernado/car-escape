@@ -70,6 +70,7 @@ WHITE = (255, 255, 255)
 
 
 class Car:
+    length = 2
     def __init__(self, space, x, y, o, colour):
         # remove selected from Car class
         self.selected = False
@@ -85,18 +86,28 @@ class Car:
         self.squares = []
         self.move_to(x, y)
 
+    # todo: remove
     def valid_move(self, x, y, board=None):
         print("Valid move {}.{}".format(x, y))
         if board and len(set(self.get_new_position(x, y)).intersection(set(board.spaces))) != 2:
             print(self.get_new_position(x, y))
             return False
-        return self._valid_vehicle_move(x, y)
+        return self.valid_vehicle_move(x, y)
 
-    def _valid_vehicle_move(self, x, y):
+    # todo remove
+    def valid_vehicle_move(self, x, y):
         if self.o == 'vertical':
             return x == self.x_init
         return y == self.y_init
 
+    # todo make
+    def valid_position_move(self, new_position):
+        if self.o == 'vertical':
+            return self.x_init == new_position.x
+        return self.y_init == new_position.y
+
+
+    # todo: merge with get_coords
     def get_new_position(self, x, y):
         print("Current position: {}".format(self.xy_coords))
         xy_coords = [(x, y)]
@@ -107,6 +118,10 @@ class Car:
         print("New position: {}".format(xy_coords))
         return xy_coords
 
+    def get_coords(self, position):
+        return self.get_new_position(position.x, position.y)
+
+    # todo: get_rid
     def move_to(self, x, y, board=None):
         if not self.valid_move(x, y, board):
             print('{}.{} -> {}.{} Not Allowed!!!'.format(self.x, self.y, x, y))
@@ -160,7 +175,18 @@ class Board:
     def add_car(self, car):
         self.vehicles.append(car)
 
-    def move_vehicle(self, car):
+    def vehicle_on_board(self, vehicle, position):
+        vob = len(set(vehicle.get_coords(position)).intersection(set(self.spaces))) == vehicle.length
+        print('VOB: {}'.format(vehicle.get_coords(position)))
+        return vob
+
+    def move_vehicle(self, vehicle, new_position):
+        if not vehicle.valid_position_move(new_position):
+            print('NOT VALID VEHICLE MOVE !!!')
+        if not self.vehicle_on_board(vehicle, new_position):
+            print('CANNOT MOVE VEHICLE OFF BOARD')
+        if not self.path_is_free(vehicle, vehicle.x, vehicle.y, new_position.x, new_position.y):
+            print('PATH IS NOT FREE')
         pass
 
     def path_is_free(self, car, x1, y1, x2, y2):
@@ -193,8 +219,15 @@ class Board:
 
 class Position:
     def __init__(self, x, y, board):
-        self.location = tuple((x, y))
+
+        self.x = x
+        self.y = y
+
         self.board = board
+
+    @property
+    def location(self):
+        return tuple((self.x, self.y))
 
     @property
     def vehicle(self):
@@ -233,13 +266,15 @@ def on_mouse_press(dim1, dim2, button, modifiers):
 @window.event
 def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
     x, y = space.map_space(dim1, dim2)
+    position = board.get_position(x, y)
     for car in cars:
         if car.selected:
             car.move_to(x, y, board)
+            board.move_vehicle(car, new_position=position)
 
 
 @window.event
-def on_mouse_release(x, y, button, modifiers):
+def on_mouse_release(dim1, dim2, button, modifiers):
     for car in cars:
         if car.selected:
             car.selected = False
