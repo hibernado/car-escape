@@ -157,7 +157,12 @@ class Board:
         if not self.path_is_free(vehicle, vehicle.x, vehicle.y, new_position.x, new_position.y):
             print('PATH IS NOT FREE')
             return None
+        if not self.path_is_free_alt(vehicle, new_position):
+            pass
         vehicle.move_to(new_position)
+
+    def path_is_free_alt(self, vehicle, new_position):
+        return True
 
     def path_is_free(self, car, x1, y1, x2, y2):
         print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
