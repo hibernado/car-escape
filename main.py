@@ -183,11 +183,14 @@ class Board:
     def move_vehicle(self, vehicle, new_position):
         if not vehicle.valid_position_move(new_position):
             print('NOT VALID VEHICLE MOVE !!!')
+            return None
         if not self.vehicle_on_board(vehicle, new_position):
             print('CANNOT MOVE VEHICLE OFF BOARD')
+            return None
         if not self.path_is_free(vehicle, vehicle.x, vehicle.y, new_position.x, new_position.y):
             print('PATH IS NOT FREE')
-        pass
+            return None
+        vehicle.move_to(new_position.x, new_position.y)
 
     def path_is_free(self, car, x1, y1, x2, y2):
         print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
@@ -269,7 +272,6 @@ def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
     position = board.get_position(x, y)
     for car in cars:
         if car.selected:
-            car.move_to(x, y, board)
             board.move_vehicle(car, new_position=position)
 
 
