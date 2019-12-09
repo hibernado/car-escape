@@ -23,7 +23,7 @@ class Space:
     def map_space(self, value1, value2):
         x = round(self._dim1.map_from(value1))
         y = round(self._dim2.map_from(value2))
-        print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
+        # print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
         return tuple((x, y))
 
     def map_xy(self, x, y):
@@ -144,29 +144,27 @@ class Board:
 
     def vehicle_on_board(self, vehicle, position):
         vob = len(set(vehicle.get_coords(position)).intersection(set(self.spaces))) == vehicle.length
-        print('VOB: {}'.format(vehicle.get_coords(position)))
         return vob
+
+    def vehicles_collide(self, vehicle_a, vehicle_b):
+        return set(vehicle_a.xy_coords).intersection(set(vehicle_b.xy_coords))
 
     def move_vehicle(self, vehicle, new_position):
         if not vehicle.valid_move(new_position):
-            print('NOT VALID VEHICLE MOVE !!!')
+            print('NOT A VALID VEHICLE MOVE !!!')
             return None
         if not self.vehicle_on_board(vehicle, new_position):
             print('CANNOT MOVE VEHICLE OFF BOARD')
             return None
-        if not self.path_is_free(vehicle, vehicle.x, vehicle.y, new_position.x, new_position.y):
+        if not self.path_is_free(vehicle, new_position):
             print('PATH IS NOT FREE')
             return None
-        if not self.path_is_free_alt(vehicle, new_position):
-            pass
         vehicle.move_to(new_position)
 
-    def path_is_free_alt(self, vehicle, new_position):
-        return True
-
-    def path_is_free(self, car, x1, y1, x2, y2):
-        print("x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
-        # Todo: Needs refactoring!!! Ugly
+    def path_is_free(self, vehicle, new_position):
+        x1, y1 = vehicle.xy_coords[0]
+        x2, y2 = vehicle.get_coords(new_position)[0]
+        # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
         if x2 >= x1:
             range_func = range(x1, x2 + 1, 1)
         else:
@@ -174,7 +172,7 @@ class Board:
 
         for x in range_func:
             for car_ in self.vehicles:
-                if car_ is not car and set(car.get_new_position(x, y1)).intersection(set(car_.xy_coords)):
+                if car_ is not vehicle and self.vehicles_collide(Car(x, y1, vehicle.o, vehicle.colour), car_):
                     return False
         if y2 >= y1:
             range_func = range(y1, y2 + 1, 1)
@@ -183,7 +181,7 @@ class Board:
 
         for y in range_func:
             for car_ in self.vehicles:
-                if car_ is not car and set(car.get_new_position(x1, y)).intersection(set(car_.xy_coords)):
+                if car_ is not vehicle and self.vehicles_collide(Car(x1, y, vehicle.o, vehicle.colour), car_):
                     return False
 
         return True
