@@ -162,6 +162,7 @@ class Board:
         vehicle.move_to(new_position)
 
     def path_is_free(self, vehicle, new_position):
+        # todo: refactor this it is ugly!
         x1, y1 = vehicle.xy_coords[0]
         x2, y2 = vehicle.get_coords(new_position)[0]
         # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
