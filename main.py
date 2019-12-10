@@ -96,15 +96,19 @@ class Car:
 
     def get_new_position(self, x, y):
         if self.o == 'vertical':
-            return [(x, y), (x, y + 1)]
+            return [(x, y + i) for i in range(self.length)]
         else:
-            return [(x, y), (x + 1, y)]
+            return [(x + i, y) for i in range(self.length)]
 
     def get_coords(self, position):
         return self.get_new_position(position.x, position.y)
 
     def move_to(self, position):
         self.xy_coords = self.get_coords(position)
+
+
+class Lorry(Car):
+    length = 3
 
 
 class Board:
