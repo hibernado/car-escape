@@ -62,13 +62,6 @@ class Square:
             a.draw(GL_QUADS)
 
 
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-
 class Car:
     length = 2
 
@@ -109,6 +102,54 @@ class Car:
 
 class Lorry(Car):
     length = 3
+
+
+class BaseLocation:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    @property
+    def location(self):
+        return tuple((self.x, self.y))
+
+    def __repr__(self):
+        return "Location {},{}".format(self.x, self.y)
+
+
+class Position(BaseLocation):
+    def __init__(self, x, y, board):
+        super().__init__(x, y)
+        self.board = board
+
+    @property
+    def vehicle(self):
+        for vehicle in self.board.vehicles:
+            if self.location in vehicle.xy_coords:
+                return vehicle
+        return None
+
+
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+DARKGREEN = (18, 161, 123)
+BLUE = (0, 0, 255)
+DARKBLUE = (18, 104, 161)
+BLACK = (0, 0, 0)
+YELLOW = (255, 239, 0)
+ORANGE = (255, 162, 0)
+PURPLE = (94, 0, 255)
+WHITE = (255, 255, 255)
+
+SETS = [[Car(0, 0, 'vertical', ORANGE),
+         Lorry(0, 2, 'vertical', PURPLE),
+         Car(0, 5, 'horizontal', GREEN),
+         Car(1, 3, 'horizontal', RED),
+         Lorry(2, 0, 'horizontal', DARKGREEN),
+         Lorry(3, 2, 'vertical', DARKBLUE),
+         Car(4, 1, 'horizontal', BLUE),
+         Lorry(5, 3, 'vertical', YELLOW)]
+        ]
 
 
 class Board:
@@ -195,40 +236,11 @@ class Board:
         return Position(x, y, self)
 
 
-class BaseLocation:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    @property
-    def location(self):
-        return tuple((self.x, self.y))
-
-    def __repr__(self):
-        return "Location {},{}".format(self.x, self.y)
-
-
-class Position(BaseLocation):
-    def __init__(self, x, y, board):
-        super().__init__(x, y)
-        self.board = board
-
-    @property
-    def vehicle(self):
-        for vehicle in self.board.vehicles:
-            if self.location in vehicle.xy_coords:
-                return vehicle
-        return None
-
-
 window = pyglet.window.Window(width=600, height=600)
 dim1 = DimensionMapping(100, 50)
 dim2 = DimensionMapping(100, 50)
 space = Space(dim1, dim2)
-cars = [Car(1, 1, 'horizontal', BLACK),
-        Car(3, 1, 'vertical', BLUE),
-        Car(1, 3, 'vertical', GREEN),
-        Car(3, 3, 'horizontal', RED)]
+cars = SETS[0]
 board = Board(vehicles=cars, size=6, space=space)
 
 
