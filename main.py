@@ -236,9 +236,9 @@ class Board:
         return Position(x, y, self)
 
 
-window = pyglet.window.Window(width=600, height=600)
-dim1 = DimensionMapping(100, 50)
-dim2 = DimensionMapping(100, 50)
+window = pyglet.window.Window(width=300, height=300)
+dim1 = DimensionMapping(50, 25)
+dim2 = DimensionMapping(50, 25)
 space = Space(dim1, dim2)
 cars = SETS[0]
 board = Board(vehicles=cars, size=6, space=space)
