@@ -263,16 +263,16 @@ def on_mouse_press(dim1, dim2, button, modifiers):
 def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
     x, y = space.map_space(dim1, dim2)
     position = Position(x, y, board)
-    for car in cars:
-        if car.selected:
-            board.move_vehicle(car, new_position=position)
+    for vehicle in vehicles:
+        if vehicle.selected:
+            board.move_vehicle(vehicle, new_position=position)
 
 
 @window.event
 def on_mouse_release(dim1, dim2, button, modifiers):
-    for car in cars:
-        if car.selected:
-            car.selected = False
+    for vehicle in vehicles:
+        if vehicle.selected:
+            vehicle.selected = False
 
 
 if __name__ == "__main__":
