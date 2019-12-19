@@ -70,34 +70,25 @@ class Car:
         self.colour = colour
         self.o = o
         self.colour = colour
-        self.xy_coords = []
-        self.move_to(BaseLocation(x, y))
-        # use location consistently throughout (remove any reference to x,y)
+        self.location = BaseLocation(x, y)
 
     @property
-    def x(self):
-        return self.xy_coords[0][0]
-
-    @property
-    def y(self):
-        return self.xy_coords[0][1]
+    def coordinates(self):
+        return self.get_coordinates(self.location)
 
     def valid_move(self, new_position):
         if self.o == 'vertical':
-            return self.x == new_position.x
-        return self.y == new_position.y
+            return self.location.x == new_position.x
+        return self.location.y == new_position.y
 
-    def get_new_position(self, x, y):
+    def get_coordinates(self, position):
         if self.o == 'vertical':
-            return [(x, y + i) for i in range(self.length)]
+            return [(position.x, position.y + i) for i in range(self.length)]
         else:
-            return [(x + i, y) for i in range(self.length)]
-
-    def get_coords(self, position):
-        return self.get_new_position(position.x, position.y)
+            return [(position.x + i, position.y) for i in range(self.length)]
 
     def move_to(self, position):
-        self.xy_coords = self.get_coords(position)
+        self.location = position
 
 
 class Lorry(Car):
@@ -125,7 +116,7 @@ class Position(BaseLocation):
     @property
     def vehicle(self):
         for vehicle in self.board.vehicles:
-            if self.location in vehicle.xy_coords:
+            if self.location in vehicle.coordinates:
                 return vehicle
         return None
 
@@ -178,7 +169,7 @@ class Board:
             square.draw()
         for car in self.vehicles:
             squares = []
-            for coord in car.xy_coords:
+            for coord in car.coordinates:
                 x, y = coord
                 squares.append(Square(self.space, x, y, .85, .85, car.colour))
             for square in squares:
@@ -188,11 +179,11 @@ class Board:
         self.vehicles.append(car)
 
     def vehicle_on_board(self, vehicle, position):
-        vob = len(set(vehicle.get_coords(position)).intersection(set(self.spaces))) == vehicle.length
+        vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
     def vehicles_collide(self, vehicle_a, vehicle_b):
-        return set(vehicle_a.xy_coords).intersection(set(vehicle_b.xy_coords))
+        return set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
 
     def move_vehicle(self, vehicle, new_position):
         if not vehicle.valid_move(new_position):
@@ -208,8 +199,8 @@ class Board:
 
     def path_is_free(self, vehicle, new_position):
         # todo: refactor this it is ugly!
-        x1, y1 = vehicle.xy_coords[0]
-        x2, y2 = vehicle.get_coords(new_position)[0]
+        x1, y1 = vehicle.coordinates[0]
+        x2, y2 = vehicle.get_coordinates(new_position)[0]
         # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
         if x2 >= x1:
             range_func = range(x1, x2 + 1, 1)
@@ -256,7 +247,7 @@ def on_mouse_press(dim1, dim2, button, modifiers):
     position = Position(x, y, board)
     if position.vehicle:
         position.vehicle.selected = True
-        print("Vehicle selected @{}".format(position.vehicle.xy_coords))
+        print("Vehicle selected @{}".format(position.vehicle.coordinates))
 
 
 @window.event
