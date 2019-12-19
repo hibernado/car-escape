@@ -240,8 +240,8 @@ window = pyglet.window.Window(width=300, height=300)
 dim1 = DimensionMapping(50, 25)
 dim2 = DimensionMapping(50, 25)
 space = Space(dim1, dim2)
-cars = SETS[0]
-board = Board(vehicles=cars, size=6, space=space)
+vehicles = SETS[0]
+board = Board(vehicles=vehicles, size=6, space=space)
 
 
 @window.event
@@ -253,7 +253,7 @@ def on_draw():
 @window.event
 def on_mouse_press(dim1, dim2, button, modifiers):
     x, y = space.map_space(dim1, dim2)
-    position = board.get_position(x, y)
+    position = Position(x, y, board)
     if position.vehicle:
         position.vehicle.selected = True
         print("Vehicle selected @{}".format(position.vehicle.xy_coords))
@@ -262,7 +262,7 @@ def on_mouse_press(dim1, dim2, button, modifiers):
 @window.event
 def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
     x, y = space.map_space(dim1, dim2)
-    position = board.get_position(x, y)
+    position = Position(x, y, board)
     for car in cars:
         if car.selected:
             board.move_vehicle(car, new_position=position)
