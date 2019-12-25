@@ -182,6 +182,7 @@ class Board:
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
+    #Todo : sometimes the car collide. Please investigate this!
     def vehicles_collide(self, vehicle_a, vehicle_b):
         return set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
 
