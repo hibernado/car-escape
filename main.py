@@ -1,6 +1,7 @@
 import pyglet
 
 from pyglet.gl import GL_QUADS
+from euclid.dim2 import Vector, Path
 
 
 class DimensionMapping:
@@ -95,10 +96,8 @@ class Lorry(Car):
     length = 3
 
 
-class BaseLocation:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+
+class BaseLocation(Vector):
 
     @property
     def location(self):
@@ -119,6 +118,7 @@ class Position(BaseLocation):
             if self.location in vehicle.coordinates:
                 return vehicle
         return None
+
 
 
 RED = (255, 0, 0)
@@ -182,11 +182,17 @@ class Board:
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
-    #Todo : sometimes the car collide. Please investigate this!
+    # Todo : sometimes the car collide. Please investigate this!
     def vehicles_collide(self, vehicle_a, vehicle_b):
-        return set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
+        # print("Vehicle_a @{}; vehicle_b @{}".format(vehicle_a.coordinates, vehicle_b.coordinates))
+        vehicle_coord_intersection = set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
+        # print("Vehicle intersection {}".format(vehicle_coord_intersection))
+        return vehicle_coord_intersection
 
     def move_vehicle(self, vehicle, new_position):
+        if vehicle.location == new_position:
+            # vehicle is not moving
+            return None
         if not vehicle.valid_move(new_position):
             print('NOT A VALID VEHICLE MOVE !!!')
             return None
@@ -200,6 +206,10 @@ class Board:
 
     def path_is_free(self, vehicle, new_position):
         # todo: refactor this it is ugly!
+        current_position = vehicle.location
+        if current_position != new_position:
+            print("{}:{}".format(current_position, new_position))
+            Path(current_position, new_position)
         x1, y1 = vehicle.coordinates[0]
         x2, y2 = vehicle.get_coordinates(new_position)[0]
         # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
