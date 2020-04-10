@@ -1,6 +1,6 @@
 import pyglet
-
 from pyglet.gl import GL_QUADS
+
 from euclid.dim2 import Vector, Path
 
 
@@ -96,7 +96,6 @@ class Lorry(Car):
     length = 3
 
 
-
 class BaseLocation(Vector):
 
     @property
@@ -118,7 +117,6 @@ class Position(BaseLocation):
             if self.location in vehicle.coordinates:
                 return vehicle
         return None
-
 
 
 RED = (255, 0, 0)
@@ -205,33 +203,17 @@ class Board:
         vehicle.move_to(new_position)
 
     def path_is_free(self, vehicle, new_position):
-        # todo: refactor this it is ugly!
         current_position = vehicle.location
-        if current_position != new_position:
-            print("{}:{}".format(current_position, new_position))
-            Path(current_position, new_position)
-        x1, y1 = vehicle.coordinates[0]
-        x2, y2 = vehicle.get_coordinates(new_position)[0]
-        # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
-        if x2 >= x1:
-            range_func = range(x1, x2 + 1, 1)
-        else:
-            range_func = range(x1, x2 - 1, -1)
+        print("{}:{}".format(current_position, new_position))
 
-        for x in range_func:
-            for car_ in self.vehicles:
-                if car_ is not vehicle and self.vehicles_collide(Car(x, y1, vehicle.o, vehicle.colour), car_):
-                    return False
-        if y2 >= y1:
-            range_func = range(y1, y2 + 1, 1)
-        else:
-            range_func = range(y1, y2 - 1, -1)
+        p = Path(current_position, new_position)
+        locations = []
+        for p in p.get_vectors():
+            locations += vehicle.get_coordinates(p)
 
-        for y in range_func:
-            for car_ in self.vehicles:
-                if car_ is not vehicle and self.vehicles_collide(Car(x1, y, vehicle.o, vehicle.colour), car_):
-                    return False
-
+        positions = [Position(l[0], l[1], self) for l in locations]
+        if any([p.vehicle for p in positions if p.vehicle and p.vehicle != vehicle]):
+            return False
         return True
 
     def get_position(self, x, y):
