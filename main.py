@@ -1,6 +1,7 @@
 import pyglet
-
 from pyglet.gl import GL_QUADS
+
+from euclid.dim2 import Vector, Path
 
 
 class DimensionMapping:
@@ -95,10 +96,7 @@ class Lorry(Car):
     length = 3
 
 
-class BaseLocation:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class BaseLocation(Vector):
 
     @property
     def location(self):
@@ -182,11 +180,10 @@ class Board:
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
-    #Todo : sometimes the car collide. Please investigate this!
-    def vehicles_collide(self, vehicle_a, vehicle_b):
-        return set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
-
     def move_vehicle(self, vehicle, new_position):
+        if vehicle.location == new_position:
+            # vehicle is not moving
+            return None
         if not vehicle.valid_move(new_position):
             print('NOT A VALID VEHICLE MOVE !!!')
             return None
@@ -199,29 +196,17 @@ class Board:
         vehicle.move_to(new_position)
 
     def path_is_free(self, vehicle, new_position):
-        # todo: refactor this it is ugly!
-        x1, y1 = vehicle.coordinates[0]
-        x2, y2 = vehicle.get_coordinates(new_position)[0]
-        # print("ALT x1 {}, y1 {}, x2 {}, y2 {}".format(x1, y1, x2, y2))
-        if x2 >= x1:
-            range_func = range(x1, x2 + 1, 1)
-        else:
-            range_func = range(x1, x2 - 1, -1)
+        current_position = vehicle.location
+        print("{}:{}".format(current_position, new_position))
 
-        for x in range_func:
-            for car_ in self.vehicles:
-                if car_ is not vehicle and self.vehicles_collide(Car(x, y1, vehicle.o, vehicle.colour), car_):
-                    return False
-        if y2 >= y1:
-            range_func = range(y1, y2 + 1, 1)
-        else:
-            range_func = range(y1, y2 - 1, -1)
+        p = Path(current_position, new_position)
+        coords = []
+        for p in p.get_vectors():
+            coords += vehicle.get_coordinates(p)
 
-        for y in range_func:
-            for car_ in self.vehicles:
-                if car_ is not vehicle and self.vehicles_collide(Car(x1, y, vehicle.o, vehicle.colour), car_):
-                    return False
-
+        positions = [Position(l[0], l[1], self) for l in coords]
+        if any([p.vehicle for p in positions if p.vehicle and p.vehicle != vehicle]):
+            return False
         return True
 
     def get_position(self, x, y):
