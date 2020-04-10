@@ -5,9 +5,7 @@ from games import games
 from geom import Position, DimensionMapping, Space
 
 window = pyglet.window.Window(width=300, height=300)
-dim1 = DimensionMapping(50, 25)
-dim2 = DimensionMapping(50, 25)
-space = Space(dim1, dim2)
+space = Space(DimensionMapping(50, 25), DimensionMapping(50, 25))
 vehicles = games[0]
 board = Board(vehicles=vehicles, size=6, space=space)
 
