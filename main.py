@@ -180,13 +180,6 @@ class Board:
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
-    # Todo : sometimes the car collide. Please investigate this!
-    def vehicles_collide(self, vehicle_a, vehicle_b):
-        # print("Vehicle_a @{}; vehicle_b @{}".format(vehicle_a.coordinates, vehicle_b.coordinates))
-        vehicle_coord_intersection = set(vehicle_a.coordinates).intersection(set(vehicle_b.coordinates))
-        # print("Vehicle intersection {}".format(vehicle_coord_intersection))
-        return vehicle_coord_intersection
-
     def move_vehicle(self, vehicle, new_position):
         if vehicle.location == new_position:
             # vehicle is not moving
@@ -207,11 +200,11 @@ class Board:
         print("{}:{}".format(current_position, new_position))
 
         p = Path(current_position, new_position)
-        locations = []
+        coords = []
         for p in p.get_vectors():
-            locations += vehicle.get_coordinates(p)
+            coords += vehicle.get_coordinates(p)
 
-        positions = [Position(l[0], l[1], self) for l in locations]
+        positions = [Position(l[0], l[1], self) for l in coords]
         if any([p.vehicle for p in positions if p.vehicle and p.vehicle != vehicle]):
             return False
         return True
