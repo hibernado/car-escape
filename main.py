@@ -3,11 +3,13 @@ import pyglet
 from board import Board
 from games import games
 from geom import Position, DimensionMapping, Space
+from constants import WIDTH, HEIGHT, BOARD_SIZE
 
-window = pyglet.window.Window(width=300, height=300)
-space = Space(DimensionMapping(50, 25), DimensionMapping(50, 25))
+window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
+space = Space(DimensionMapping(WIDTH/BOARD_SIZE, WIDTH/BOARD_SIZE/2),
+              DimensionMapping(WIDTH/BOARD_SIZE, WIDTH/BOARD_SIZE/2))
 vehicles = games[0]
-board = Board(vehicles=vehicles, size=6, space=space)
+board = Board(vehicles=vehicles, size=BOARD_SIZE, space=space)
 
 
 @window.event
