@@ -1,8 +1,11 @@
+import argparse
+import sys
+
 import pyglet
 
 from board import Board
 from constants import WIDTH, HEIGHT, BOARD_SIZE
-from data import games
+from data import vehicle_sets
 from geom import Position, DimensionMapping, Space
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
@@ -39,7 +42,7 @@ def on_mouse_release(dim1, dim2, button, modifiers):
             vehicle.selected = False
 
 
-def main():
+def handler(level: int):
     global vehicles
     global board
     global space
@@ -47,9 +50,17 @@ def main():
     space = Space(DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2),
                   DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2))
     board = Board(size=BOARD_SIZE, space=space)
-    vehicles = games[0]
+    indx = int(level) - 1
+    vehicles = vehicle_sets[indx]
     board.vehicles = vehicles
     pyglet.app.run()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--level', required=True)
+    args = parser.parse_args(sys.argv[1:])
+    handler(level=args.level)
 
 
 if __name__ == "__main__":
