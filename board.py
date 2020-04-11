@@ -5,24 +5,23 @@ from geom import Square, Position
 
 class Board:
 
-    def __init__(self, vehicles, size, space):
-        self.vehicles = vehicles
+    def __init__(self, size, space):
+        self.vehicles = []
         self.size = size
         self.space = space
-
         self.spaces = []
-        for i in range(size):
-            for j in range(size):
-                self.spaces.append((i, j))
-
         self.background_squares = []
+        self._build_board()
+
+    def _build_board(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                self.spaces.append((i, j))
 
         for loc in self.spaces:
             x, y = loc
-            square = Square(space, x, y, .95, .95, WHITE)
+            square = Square(self.space, x, y, .95, .95, WHITE)
             self.background_squares.append(square)
-
-        self.draw()
 
     def draw(self):
         for square in self.background_squares:
