@@ -1,14 +1,11 @@
 import pyglet
 
 from board import Board
+from constants import WIDTH, HEIGHT, BOARD_SIZE
 from data import games
 from geom import Position, DimensionMapping, Space
-from constants import WIDTH, HEIGHT, BOARD_SIZE
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
-space = Space(DimensionMapping(WIDTH/BOARD_SIZE, WIDTH/BOARD_SIZE/2),
-              DimensionMapping(WIDTH/BOARD_SIZE, WIDTH/BOARD_SIZE/2))
-board = Board(size=BOARD_SIZE, space=space)
 
 
 @window.event
@@ -42,7 +39,18 @@ def on_mouse_release(dim1, dim2, button, modifiers):
             vehicle.selected = False
 
 
-if __name__ == "__main__":
+def main():
+    global vehicles
+    global board
+    global space
+
+    space = Space(DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2),
+                  DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2))
+    board = Board(size=BOARD_SIZE, space=space)
     vehicles = games[0]
     board.vehicles = vehicles
     pyglet.app.run()
+
+
+if __name__ == "__main__":
+    main()
