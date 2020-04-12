@@ -5,7 +5,7 @@ import pyglet
 
 from board import Board
 from constants import WIDTH, HEIGHT, BOARD_SIZE, VEHICLE_SETS
-from geom import Position, DimensionMapping, Space
+from geom import DimensionMapping, Space
 from vehicles import get_vehicle_from_config
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
@@ -19,8 +19,8 @@ def on_draw():
 
 @window.event
 def on_mouse_press(dim1, dim2, button, modifiers):
-    x, y = space.map_space(dim1, dim2)
-    position = Position(x, y, board)
+    position = space.map_space(dim1, dim2)
+    position.board = board
     if position.vehicle:
         position.vehicle.selected = True
         print("Vehicle selected @{}".format(position.vehicle.coordinates))
@@ -28,8 +28,8 @@ def on_mouse_press(dim1, dim2, button, modifiers):
 
 @window.event
 def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
-    x, y = space.map_space(dim1, dim2)
-    position = Position(x, y, board)
+    position = space.map_space(dim1, dim2)
+    position.board = board
     for vehicle in vehicles:
         if vehicle.selected:
             board.move_vehicle(vehicle, new_position=position)

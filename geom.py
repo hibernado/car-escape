@@ -5,6 +5,29 @@ from colour import Colour
 from euclid.dim2 import Vector
 
 
+class BaseLocation(Vector):
+
+    @property
+    def location(self):
+        return tuple((self.x, self.y))
+
+    def __repr__(self):
+        return "Location {},{}".format(self.x, self.y)
+
+
+class Position(BaseLocation):
+    def __init__(self, x, y, board=None):
+        super().__init__(x, y)
+        self.board = board
+
+    @property
+    def vehicle(self):
+        for vehicle in self.board.vehicles:
+            if self.location in vehicle.coordinates:
+                return vehicle
+        return None
+
+
 class DimensionMapping:
     def __init__(self, unit_vector, const):
         self.uv = unit_vector
@@ -26,7 +49,7 @@ class Space:
         x = round(self._dim1.map_from(value1))
         y = round(self._dim2.map_from(value2))
         # print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
-        return tuple((x, y))
+        return Position(x, y)
 
     def map_xy(self, x, y):
         return self._dim1.map_to(x), self._dim2.map_to(y)
@@ -64,24 +87,3 @@ class Square:
             a.draw(GL_QUADS)
 
 
-class BaseLocation(Vector):
-
-    @property
-    def location(self):
-        return tuple((self.x, self.y))
-
-    def __repr__(self):
-        return "Location {},{}".format(self.x, self.y)
-
-
-class Position(BaseLocation):
-    def __init__(self, x, y, board):
-        super().__init__(x, y)
-        self.board = board
-
-    @property
-    def vehicle(self):
-        for vehicle in self.board.vehicles:
-            if self.location in vehicle.coordinates:
-                return vehicle
-        return None
