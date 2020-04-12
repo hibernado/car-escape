@@ -23,7 +23,7 @@ class Board:
 
         for loc in self.spaces:
             x, y = loc
-            square = Square(self.space, x, y, .95, .95, WHITE)
+            square = Square(self.space, x, y, .95, .95, Colour(WHITE))
             self.background_squares.append(square)
 
     def draw(self):
@@ -33,7 +33,7 @@ class Board:
             squares = []
             for coord in car.coordinates:
                 x, y = coord
-                squares.append(Square(self.space, x, y, .85, .85, car.colour.rgb))
+                squares.append(Square(self.space, x, y, .85, .85, car.colour))
             for square in squares:
                 square.draw()
 

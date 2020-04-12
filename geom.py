@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.gl import GL_QUADS
 
+from colour import Colour
 from euclid.dim2 import Vector
 
 
@@ -34,14 +35,14 @@ class Space:
 class Square:
     coordinate_count = 4  # Squares have 4 x,y coordinates
 
-    def __init__(self, space, x, y, w, h, colour):
+    def __init__(self, space, x, y, w, h, colour: Colour):
         self.space = space
         self._x = x
         self._y = y
         self._w = w
         self._h = h
         # Todo: investigate glColor3f(1, 0, 0)
-        self.colour = colour * self.coordinate_count
+        self.colour = colour.rgb * self.coordinate_count
 
     def _coordinates(self, x, y, w, h):
         p_a = list(self.space.map_xy(x - (w / 2), y - (h / 2)))
