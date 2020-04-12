@@ -5,10 +5,10 @@ import pyglet
 
 from game import Game
 from geom import Space, DimensionMapping
-from constants import WIDTH, HEIGHT, BOARD_SIZE
+from config import Config
 
-window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
-
+window = pyglet.window.Window(width=Config.width,
+                              height=Config.height)
 
 @window.event
 def on_draw():
@@ -37,9 +37,9 @@ def handler(level: int):
     global game
     global space
 
-    game = Game(level)
-    space = Space(DimensionMapping(WIDTH / game.board.size, WIDTH / game.board.size / 2),
-                  DimensionMapping(WIDTH / game.board.size, WIDTH / game.board.size / 2))
+    game = Game(level, Config)
+    space = Space(DimensionMapping(Config.width / game.board.size, Config.width / game.board.size / 2),
+                  DimensionMapping(Config.width / game.board.size, Config.width / game.board.size / 2))
 
     pyglet.app.run()
 

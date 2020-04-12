@@ -1,9 +1,8 @@
 from board import Board
-from constants import VEHICLE_SETS, BOARD_SIZE
+from config import Config
 from euclid.dim2 import Path
 from geom import Position
-from vehicles import Vehicle
-from vehicles import get_vehicle_from_config
+from vehicles import Vehicle, get_vehicle_from_config
 
 
 def vehicle_off_board(board: Board, vehicle: Vehicle, position):
@@ -45,9 +44,9 @@ def vehicle_not_moving(vehicle: Vehicle, new_position: Position):
 
 class Game:
 
-    def __init__(self, level: int):
-        self.board = Board(size=BOARD_SIZE)
-        self.vehicles = [get_vehicle_from_config(*v) for v in VEHICLE_SETS[level - 1]]
+    def __init__(self, level: int, config: Config):
+        self.board = Board(config.board_size, config.board_colour)
+        self.vehicles = [get_vehicle_from_config(*v) for v in config.vehicles[level - 1]]
 
     @property
     def selected_vehicle(self):
