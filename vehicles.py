@@ -5,11 +5,12 @@ from geom import Position
 class Vehicle:
     length = None
 
-    def __init__(self, position, o, colour: Colour):
+    def __init__(self, position, o, colour: Colour, is_escape_vehicle=False):
         self.selected = False
         self.colour = colour
         self.o = o
         self.position = position
+        self.is_escape_vehicle = is_escape_vehicle
 
     @property
     def positions(self):
@@ -38,10 +39,14 @@ class Lorry(Vehicle):
     length = 3
 
 
-def get_vehicle_from_config(vehicle_type, x, y, orientation, rgb):
+def get_vehicle_from_config(vehicle_type, x, y, orientation, rgb, escape_car_colour):
     if vehicle_type == 'car':
-        return Car(Position(x, y), orientation, Colour(rgb))
+        vehicle = Car(Position(x, y), orientation, Colour(rgb))
     elif vehicle_type == 'lorry':
-        return Lorry(Position(x, y), orientation, Colour(rgb))
+        vehicle =  Lorry(Position(x, y), orientation, Colour(rgb))
     else:
         raise Exception('Unknown vehicle_type! {}'.format(vehicle_type))
+
+    if vehicle.colour == escape_car_colour:
+        vehicle.is_escape_vehicle = True
+    return vehicle

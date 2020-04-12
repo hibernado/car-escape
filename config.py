@@ -1,5 +1,5 @@
 from colour import Colour
-from constants import BOARD_SIZE, WHITE, VEHICLE_SETS
+from constants import BOARD_SIZE, WHITE, VEHICLE_SETS, RED
 from constants import WIDTH, HEIGHT
 
 
@@ -9,3 +9,4 @@ class Config:
     vehicles = VEHICLE_SETS
     width = WIDTH
     height = HEIGHT
+    escape_car_colour = Colour(RED)
