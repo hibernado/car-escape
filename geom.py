@@ -11,18 +11,18 @@ class Position(Vector):
         self.board = board
 
     @property
-    def location(self):
-        return tuple((self.x, self.y))
-
-    @property
     def vehicle(self):
         for vehicle in self.board.vehicles:
-            if self.location in vehicle.coordinates:
+            if self in vehicle.positions:
                 return vehicle
         return None
 
     def __repr__(self):
         return "Position {},{}".format(self.x, self.y)
+
+    def __hash__(self):
+        return hash((self.x, self.y,))
+
 
 class DimensionMapping:
     def __init__(self, unit_vector, const):

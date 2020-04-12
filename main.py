@@ -23,7 +23,7 @@ def on_mouse_press(dim1, dim2, button, modifiers):
     position.board = board
     if position.vehicle:
         position.vehicle.selected = True
-        print("Vehicle selected @{}".format(position.vehicle.coordinates))
+        print("Vehicle selected @{}".format(position.vehicle))
 
 
 @window.event

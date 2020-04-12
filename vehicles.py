@@ -12,19 +12,19 @@ class Vehicle:
         self.location = Position(x, y)
 
     @property
-    def coordinates(self):
-        return self.get_coordinates(self.location)
+    def positions(self):
+        return self.get_locations(self.location)
+
+    def get_locations(self, location):
+        if self.o == 'vertical':
+            return set(Position(location.x, location.y + i) for i in range(self.length))
+        else:
+            return set(Position(location.x + i, location.y) for i in range(self.length))
 
     def valid_move(self, new_position):
         if self.o == 'vertical':
             return self.location.x == new_position.x
         return self.location.y == new_position.y
-
-    def get_coordinates(self, position):
-        if self.o == 'vertical':
-            return [(position.x, position.y + i) for i in range(self.length)]
-        else:
-            return [(position.x + i, position.y) for i in range(self.length)]
 
     def move_to(self, position):
         self.location = position

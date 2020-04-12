@@ -19,11 +19,10 @@ class Board:
     def _build_board(self):
         for i in range(self.size):
             for j in range(self.size):
-                self.spaces.append((i, j))
+                self.spaces.append(Position(i, j))
 
-        for loc in self.spaces:
-            x, y = loc
-            square = Square(self.space, x, y, .95, .95, Colour(WHITE))
+        for p in self.spaces:
+            square = Square(self.space, p.x, p.y, .95, .95, Colour(WHITE))
             self.background_squares.append(square)
 
     def draw(self):
@@ -31,19 +30,18 @@ class Board:
             square.draw()
         for car in self.vehicles:
             squares = []
-            for coord in car.coordinates:
-                x, y = coord
-                squares.append(Square(self.space, x, y, .85, .85, car.colour))
+            for p in car.positions:
+                squares.append(Square(self.space, p.x, p.y, .85, .85, car.colour))
             for square in squares:
                 square.draw()
 
     def add_car(self, car):
         self.vehicles.append(car)
 
-    def vehicle_on_board(self, vehicle, position):
-        if vehicle.colour == self.red and position.x > max(self.spaces)[0]:
-            return True
-        vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
+    def vehicle_on_board(self, vehicle: Vehicle, position):
+        # if vehicle.colour == self.red and position.x > max(self.spaces)[0]:
+        #     return True
+        vob = vehicle.get_locations(position).intersection(self.spaces) == vehicle.get_locations(position)
         return vob
 
     def move_vehicle(self, vehicle: Vehicle, new_position):
@@ -68,10 +66,12 @@ class Board:
         p = Path(current_position, new_position)
         coords = []
         for p in p.get_vectors():
-            coords += vehicle.get_coordinates(p)
+            coords += vehicle.get_locations(p)
 
-        positions = [Position(l[0], l[1], self) for l in coords]
-        if any([p.vehicle for p in positions if p.vehicle and p.vehicle != vehicle]):
+        for c in coords:
+            c.board = self
+
+        if any([p.vehicle for p in coords if p.vehicle and p.vehicle != vehicle]):
             return False
         return True
 
