@@ -50,8 +50,7 @@ def handler(level: int):
     space = Space(DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2),
                   DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2))
     board = Board(size=BOARD_SIZE, space=space)
-    indx = int(level) - 1
-    vehicles = [get_vehicle_from_config(*v) for v in VEHICLE_SETS[indx]]
+    vehicles = [get_vehicle_from_config(*v) for v in VEHICLE_SETS[level - 1]]
     board.vehicles = vehicles
     pyglet.app.run()
 
@@ -60,7 +59,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--level', required=True)
     args = parser.parse_args(sys.argv[1:])
-    handler(level=args.level)
+    handler(level=int(args.level))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from colour import Colour
-from geom import BaseLocation
+from geom import Position
 
 
 class Vehicle:
@@ -9,7 +9,7 @@ class Vehicle:
         self.selected = False
         self.colour = colour
         self.o = o
-        self.location = BaseLocation(x, y)
+        self.location = Position(x, y)
 
     @property
     def coordinates(self):

@@ -5,20 +5,14 @@ from colour import Colour
 from euclid.dim2 import Vector
 
 
-class BaseLocation(Vector):
+class Position(Vector):
+    def __init__(self, x, y, board=None):
+        super().__init__(x, y)
+        self.board = board
 
     @property
     def location(self):
         return tuple((self.x, self.y))
-
-    def __repr__(self):
-        return "Location {},{}".format(self.x, self.y)
-
-
-class Position(BaseLocation):
-    def __init__(self, x, y, board=None):
-        super().__init__(x, y)
-        self.board = board
 
     @property
     def vehicle(self):
@@ -27,6 +21,8 @@ class Position(BaseLocation):
                 return vehicle
         return None
 
+    def __repr__(self):
+        return "Position {},{}".format(self.x, self.y)
 
 class DimensionMapping:
     def __init__(self, unit_vector, const):
@@ -51,8 +47,8 @@ class Space:
         # print("map_space {},{} --> {}:{}".format(value1, value2, x, y))
         return Position(x, y)
 
-    def map_xy(self, x, y):
-        return self._dim1.map_to(x), self._dim2.map_to(y)
+    def map_xy(self, position: Position):
+        return self._dim1.map_to(position.x), self._dim2.map_to(position.y)
 
 
 class Square:
@@ -67,17 +63,19 @@ class Square:
         # Todo: investigate glColor3f(1, 0, 0)
         self.colour = colour.rgb * self.coordinate_count
 
-    def _coordinates(self, x, y, w, h):
-        p_a = list(self.space.map_xy(x - (w / 2), y - (h / 2)))
-        p_b = list(self.space.map_xy(x - (w / 2), y + (h / 2)))
-        p_c = list(self.space.map_xy(x + (w / 2), y + (h / 2)))
-        p_d = list(self.space.map_xy(x + (w / 2), y - (h / 2)))
-        return p_a + p_b + p_c + p_d
-
     @property
     def coordinates(self):
-        coords = [self._coordinates(self._x, self._y, self._w, self._h)]
-        return coords
+
+        p_a = Position(x=self._x - (self._w / 2), y=self._y - (self._h / 2))
+        p_b = Position(x=self._x - (self._w / 2), y=self._y + (self._h / 2))
+        p_c = Position(x=self._x + (self._w / 2), y=self._y + (self._h / 2))
+        p_d = Position(x=self._x + (self._w / 2), y=self._y - (self._h / 2))
+
+        r = []
+        for p in [p_a, p_b, p_c, p_d]:
+            r += self.space.map_xy(p)
+
+        return [r]
 
     # color definition explained here:
     # https://stackoverflow.com/questions/55087102/pyglet-drawing-primitives-with-color
@@ -85,5 +83,3 @@ class Square:
         for c in self.coordinates:
             a = pyglet.graphics.vertex_list(4, ('v2f', c), ('c3B', self.colour))
             a.draw(GL_QUADS)
-
-
