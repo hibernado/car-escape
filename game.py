@@ -15,7 +15,6 @@ def vehicle_off_board(board: Board, vehicle: Vehicle, position):
         return True
 
 
-
 def path_contains_obstacle(vehicle: Vehicle, vehicles: list, new_position: Position):
     print("{}:{}".format(vehicle.position, new_position))
     positions_in_path = set()
@@ -44,7 +43,6 @@ def vehicle_not_moving(vehicle: Vehicle, new_position: Position):
         return True
 
 
-
 class Game:
 
     def __init__(self, level: int):
@@ -71,9 +69,9 @@ class Game:
         self.move_vehicle(self.selected_vehicle, new_position)
 
     def move_vehicle(self, vehicle: Vehicle, new_position: Position):
-        if vehicle_not_moving(vehicle, new_position) or\
-                invalid_move(vehicle, new_position) or\
-                vehicle_off_board(self.board, vehicle, new_position) or\
+        if vehicle_not_moving(vehicle, new_position) or \
+                invalid_move(vehicle, new_position) or \
+                vehicle_off_board(self.board, vehicle, new_position) or \
                 path_contains_obstacle(vehicle, self.vehicles, new_position):
             return None
         vehicle.move_to(new_position)
