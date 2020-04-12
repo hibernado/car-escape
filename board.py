@@ -1,7 +1,8 @@
 from constants import WHITE
 from euclid.dim2 import Path
 from geom import Square, Position
-from vehicles import Vehicle
+from vehicles import Vehicle, Colour
+from constants import RED
 
 
 class Board:
@@ -13,6 +14,7 @@ class Board:
         self.spaces = []
         self.background_squares = []
         self._build_board()
+        self.red = Colour(RED)
 
     def _build_board(self):
         for i in range(self.size):
@@ -31,7 +33,7 @@ class Board:
             squares = []
             for coord in car.coordinates:
                 x, y = coord
-                squares.append(Square(self.space, x, y, .85, .85, car.colour))
+                squares.append(Square(self.space, x, y, .85, .85, car.colour.rgb))
             for square in squares:
                 square.draw()
 
@@ -39,6 +41,8 @@ class Board:
         self.vehicles.append(car)
 
     def vehicle_on_board(self, vehicle, position):
+        if vehicle.colour == self.red and position.x > max(self.spaces)[0]:
+            return True
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 

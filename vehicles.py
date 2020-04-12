@@ -1,14 +1,21 @@
 from geom import BaseLocation
 
 
+class Colour:
+    def __init__(self, rgb):
+        self.rgb = rgb
+
+    def __eq__(self, other):
+        return other.rgb == self.rgb
+
+
 class Vehicle:
     length = None
 
-    def __init__(self, x, y, o, colour):
+    def __init__(self, x, y, o, colour: Colour):
         self.selected = False
         self.colour = colour
         self.o = o
-        self.colour = colour
         self.location = BaseLocation(x, y)
 
     @property
@@ -36,3 +43,12 @@ class Car(Vehicle):
 
 class Lorry(Vehicle):
     length = 3
+
+
+def get_vehicle_from_config(vehicle_type, x, y, orientation, rgb):
+    if vehicle_type == 'car':
+        return Car(x, y, orientation, Colour(rgb))
+    elif vehicle_type == 'lorry':
+        return Lorry(x, y, orientation, Colour(rgb))
+    else:
+        raise Exception('Unknown vehicle_type! {}'.format(vehicle_type))

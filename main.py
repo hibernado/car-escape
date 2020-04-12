@@ -4,9 +4,9 @@ import sys
 import pyglet
 
 from board import Board
-from constants import WIDTH, HEIGHT, BOARD_SIZE
-from data import vehicle_sets
+from constants import WIDTH, HEIGHT, BOARD_SIZE, VEHICLE_SETS
 from geom import Position, DimensionMapping, Space
+from vehicles import get_vehicle_from_config
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 
@@ -51,7 +51,7 @@ def handler(level: int):
                   DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2))
     board = Board(size=BOARD_SIZE, space=space)
     indx = int(level) - 1
-    vehicles = vehicle_sets[indx]
+    vehicles = [get_vehicle_from_config(*v) for v in VEHICLE_SETS[indx]]
     board.vehicles = vehicles
     pyglet.app.run()
 
