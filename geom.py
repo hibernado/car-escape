@@ -6,16 +6,8 @@ from euclid.dim2 import Vector
 
 
 class Position(Vector):
-    def __init__(self, x, y, board=None):
+    def __init__(self, x, y):
         super().__init__(x, y)
-        self.board = board
-
-    @property
-    def vehicle(self):
-        for vehicle in self.board.vehicles:
-            if self in vehicle.positions:
-                return vehicle
-        return None
 
     def __repr__(self):
         return "Position {},{}".format(self.x, self.y)
@@ -49,6 +41,14 @@ class Space:
 
     def map_xy(self, position: Position):
         return self._dim1.map_to(position.x), self._dim2.map_to(position.y)
+
+    def draw(self, board, vehicles):
+        for p in board.positions:
+            Square(self, p.x, p.y, .95, .95, board.colour).draw()
+
+        for car in vehicles:
+            for p in car.positions:
+                Square(self, p.x, p.y, .85, .85, car.colour).draw()
 
 
 class Square:

@@ -3,10 +3,9 @@ import sys
 
 import pyglet
 
-from board import Board
-from constants import WIDTH, HEIGHT, BOARD_SIZE, VEHICLE_SETS
-from geom import DimensionMapping, Space
-from vehicles import get_vehicle_from_config
+from game import Game
+from geom import Space, DimensionMapping
+from constants import WIDTH, HEIGHT, BOARD_SIZE
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 
@@ -14,44 +13,34 @@ window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 @window.event
 def on_draw():
     window.clear()
-    board.draw()
+    space.draw(game.board, game.vehicles)
 
 
 @window.event
 def on_mouse_press(dim1, dim2, button, modifiers):
     position = space.map_space(dim1, dim2)
-    position.board = board
-    if position.vehicle:
-        position.vehicle.selected = True
-        print("Vehicle selected @{}".format(position.vehicle))
+    game.select_vehicle(position)
 
 
 @window.event
 def on_mouse_drag(dim1, dim2, dx, dy, buttons, modifiers):
     position = space.map_space(dim1, dim2)
-    position.board = board
-    for vehicle in vehicles:
-        if vehicle.selected:
-            board.move_vehicle(vehicle, new_position=position)
+    game.update(new_position=position)
 
 
 @window.event
 def on_mouse_release(dim1, dim2, button, modifiers):
-    for vehicle in vehicles:
-        if vehicle.selected:
-            vehicle.selected = False
+    game.deselect_all_vehicles()
 
 
 def handler(level: int):
-    global vehicles
-    global board
+    global game
     global space
 
-    space = Space(DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2),
-                  DimensionMapping(WIDTH / BOARD_SIZE, WIDTH / BOARD_SIZE / 2))
-    board = Board(size=BOARD_SIZE, space=space)
-    vehicles = [get_vehicle_from_config(*v) for v in VEHICLE_SETS[level - 1]]
-    board.vehicles = vehicles
+    game = Game(level)
+    space = Space(DimensionMapping(WIDTH / game.board.size, WIDTH / game.board.size / 2),
+                  DimensionMapping(WIDTH / game.board.size, WIDTH / game.board.size / 2))
+
     pyglet.app.run()
 
 
