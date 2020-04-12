@@ -3,12 +3,13 @@ import sys
 
 import pyglet
 
+from config import Config
 from game import Game
 from geom import Space, DimensionMapping
-from config import Config
 
 window = pyglet.window.Window(width=Config.width,
                               height=Config.height)
+
 
 @window.event
 def on_draw():
