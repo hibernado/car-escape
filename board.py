@@ -1,6 +1,7 @@
 from constants import WHITE
 from euclid.dim2 import Path
 from geom import Square, Position
+from vehicles import Vehicle
 
 
 class Board:
@@ -41,7 +42,7 @@ class Board:
         vob = len(set(vehicle.get_coordinates(position)).intersection(set(self.spaces))) == vehicle.length
         return vob
 
-    def move_vehicle(self, vehicle, new_position):
+    def move_vehicle(self, vehicle: Vehicle, new_position):
         if vehicle.location == new_position:
             # vehicle is not moving
             return None

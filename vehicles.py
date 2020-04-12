@@ -1,8 +1,8 @@
 from geom import BaseLocation
 
 
-class Car:
-    length = 2
+class Vehicle:
+    length = None
 
     def __init__(self, x, y, o, colour):
         self.selected = False
@@ -30,5 +30,9 @@ class Car:
         self.location = position
 
 
-class Lorry(Car):
+class Car(Vehicle):
+    length = 2
+
+
+class Lorry(Vehicle):
     length = 3
