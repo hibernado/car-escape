@@ -41,11 +41,11 @@ class Board:
     def vehicle_on_board(self, vehicle: Vehicle, position):
         # if vehicle.colour == self.red and position.x > max(self.spaces)[0]:
         #     return True
-        vob = vehicle.get_locations(position).intersection(self.spaces) == vehicle.get_locations(position)
+        vob = vehicle.get_positions(position).intersection(self.spaces) == vehicle.get_positions(position)
         return vob
 
     def move_vehicle(self, vehicle: Vehicle, new_position):
-        if vehicle.location == new_position:
+        if vehicle.position == new_position:
             # vehicle is not moving
             return None
         if not vehicle.valid_move(new_position):
@@ -59,21 +59,18 @@ class Board:
             return None
         vehicle.move_to(new_position)
 
-    def path_is_free(self, vehicle, new_position):
-        current_position = vehicle.location
+    def path_is_free(self, vehicle, new_position: Position):
+        current_position = vehicle.position
         print("{}:{}".format(current_position, new_position))
 
         p = Path(current_position, new_position)
-        coords = []
+        positions = []
         for p in p.get_vectors():
-            coords += vehicle.get_locations(p)
+            positions += vehicle.get_positions(p)
 
-        for c in coords:
-            c.board = self
+        for p in positions:
+            p.board = self
 
-        if any([p.vehicle for p in coords if p.vehicle and p.vehicle != vehicle]):
+        if any([p.vehicle for p in positions if p.vehicle and p.vehicle != vehicle]):
             return False
         return True
-
-    def get_position(self, x, y):
-        return Position(x, y, self)

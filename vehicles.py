@@ -9,25 +9,25 @@ class Vehicle:
         self.selected = False
         self.colour = colour
         self.o = o
-        self.location = Position(x, y)
+        self.position = Position(x, y)
 
     @property
     def positions(self):
-        return self.get_locations(self.location)
+        return self.get_positions(self.position)
 
-    def get_locations(self, location):
+    def get_positions(self, position):
         if self.o == 'vertical':
-            return set(Position(location.x, location.y + i) for i in range(self.length))
+            return set(Position(position.x, position.y + i) for i in range(self.length))
         else:
-            return set(Position(location.x + i, location.y) for i in range(self.length))
+            return set(Position(position.x + i, position.y) for i in range(self.length))
 
     def valid_move(self, new_position):
         if self.o == 'vertical':
-            return self.location.x == new_position.x
-        return self.location.y == new_position.y
+            return self.position.x == new_position.x
+        return self.position.y == new_position.y
 
     def move_to(self, position):
-        self.location = position
+        self.position = position
 
 
 class Car(Vehicle):
